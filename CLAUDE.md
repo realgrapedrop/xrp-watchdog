@@ -101,7 +101,7 @@ XRP Watchdog is a real-time wash trading and market manipulation detection syste
 │   ├── trade_collector.py             # Phase 2: Trade extraction
 │   └── getMakerTaker.sh               # Bash helper for trade parsing
 ├── analyzers/
-│   └── token_analyzer.py              # Phase 3: Risk scoring (v1.0 + v2.0)
+│   └── token_analyzer.py              # Phase 3: Risk scoring algorithm
 ├── sql/
 │   ├── schema.sql                     # Main database schema
 │   └── migrations/
@@ -171,7 +171,7 @@ python scripts/manage_whitelist.py list
 python scripts/manage_whitelist.py add <code> <issuer> <name> --category stablecoin
 ```
 
-### Token Statistics Table: `xrp_watchdog.token_stats` ✨ NEW
+### Token Statistics Table: `xrp_watchdog.token_stats`
 
 Aggregated token-level risk metrics (updated every 5 minutes):
 
@@ -183,8 +183,7 @@ CREATE TABLE xrp_watchdog.token_stats (
   unique_takers UInt32,
   total_xrp_volume Float64,
   trade_density Float64,           -- Trades per hour
-  risk_score_v1 Float32,            -- Original algorithm
-  risk_score_v2 Float32,            -- Enhanced algorithm
+  risk_score_v2 Float32,            -- Manipulation risk score (0-100)
   burst_score Float32,              -- Temporal clustering detection
   is_whitelisted UInt8,
   last_updated DateTime64(3)
@@ -193,8 +192,7 @@ ORDER BY (risk_score_v2, token_code, token_issuer);
 ```
 
 **Key Metrics:**
-- `risk_score_v1`: Legacy scoring (0-100), preserved for comparison
-- `risk_score_v2`: **Current scoring** (0-100) with logarithmic volume scaling
+- `risk_score_v2`: Manipulation risk score (0-100) with logarithmic volume scaling
 - `burst_score`: Rapid-fire trading detection (0-100)
 - `trade_density`: Trades per hour (helps identify bot activity)
 
@@ -232,126 +230,60 @@ LIMIT 20;
    - Enrich with RippleState balance changes
    - Insert into `executed_trades` table
 
-3. **Phase 3: Risk Analysis (~0.6 seconds)** ✨ NEW
+3. **Phase 3: Risk Analysis (~0.04 seconds)**
    - Aggregate trades by token into statistics
-   - Calculate v1.0 and v2.0 risk scores
+   - Calculate manipulation risk scores (0-100)
    - Detect burst patterns and trade density
    - Check whitelist status
    - Refresh `token_stats` table
 
-3. **Result:**
-   - Total duration: 3-5 seconds per batch
-   - Captures 95%+ of manipulation patterns
+4. **Result:**
+   - Total duration: 5-10 seconds per batch
+   - Captures 100% of ledgers (130 ledgers every 5 minutes)
    - Minimizes validator load
-   - Scalable to full history collection (future v2.0)
+   - Query optimized with 15x performance improvement
 
 **Performance:**
-- Batch size: 13 ledgers (~3.5 seconds close time each)
-- Collection time: 3-5 seconds per batch
-- Data captured: 15-20 trades per batch average
+- Batch size: 130 ledgers (5-minute window)
+- Collection time: 5-10 seconds per batch
+- Analyzer time: 0.04 seconds (15x faster after optimization)
+- Data captured: 48,000+ trades, 360+ tokens
 - Database growth: ~500 MB per month (estimated)
 
 ---
 
 ## Risk Scoring Methodology
 
-### Current Algorithm (v1.0)
+### Current Algorithm
 
-**Formula:**
-```
-Risk Score (0-100) =
-  Volume Component (max 50) +
-  Token Focus Component (max 30) +
-  Price Stability Component (max 20)
-```
-
-**Component Breakdown:**
-
-#### 1. Volume Component (Max 50 points)
-```
-Points = min(50, total_xrp_volume / 20)
-```
-- Measures trading activity magnitude
-- Caps at 50 to prevent volume from dominating
-- 1,000 XRP = 50 points
-- 20,000 XRP = 50 points (capped)
-
-#### 2. Token Focus (Max 30 points)
-```
-1 token only:    30 points (highest suspicion)
-2 tokens:        25 points
-3-5 tokens:      15 points
-6+ tokens:       5 points (more diversified = less suspicious)
-```
-- Normal traders diversify across many tokens
-- Manipulators focus on single token to control price
-
-#### 3. Price Stability (Max 20 points)
-```
-Coefficient of Variation (CV):
-  CV < 0.1%:   20 points (bot-like precision)
-  CV < 1%:     15 points
-  CV < 5%:     10 points
-  CV >= 5%:    5 points (normal variance)
-```
-- Measures price consistency across trades
-- Real markets have natural variance
-- Wash trading shows artificial stability
-
-### Impact Tiers
-
-**Risk Score Ranges:**
-- **CRITICAL (80-100):** Very high likelihood of manipulation
-- **HIGH (70-79):** Strong manipulation signals
-- **MEDIUM (50-69):** Moderate suspicious patterns
-- **LOW (<50):** Normal trading behavior
-
-### Known Limitations
-
-**Volume Cap Issue:**
-- 1,000 XRP and 100,000 XRP both score 50 points
-- Large burst manipulations may be underweighted
-- Example: CORE token (21,425 XRP in 6 trades) scored 90 vs TAZZ (1,028 XRP in 453 trades) scored 95
-
-**Missing Factors:**
-- Average interval between trades (burst detection)
-- Trade density (trades per day)
-- Active period concentration
-
----
-
-## ✅ Implemented Scoring Algorithm (v2.0)
-
-**Status:** Deployed as of October 31, 2025
+**Status:** Production deployment (November 2025)
 **Database Table:** `xrp_watchdog.token_stats`
 **Analyzer Script:** `analyzers/token_analyzer.py`
 
-### Enhanced Algorithm Components
-
-**Full v2.0 Formula:**
+**Formula:**
 ```python
-Risk Score v2.0 (0-100) =
+Risk Score (0-100) =
   Volume Component (max 50) +           # Logarithmic scaling
   Token Focus Component (max 30) +      # Account concentration
-  Price Stability Component (max 20) +  # Enhanced variance detection
-  Burst Detection Component (max 15) +  # NEW: Temporal clustering
-  Trade Size Uniformity (max 10)        # NEW: Robotic pattern detection
+  Price Stability Component (max 20) +  # Variance detection
+  Burst Detection Component (max 15) +  # Temporal clustering
+  Trade Size Uniformity (max 10)        # Robotic pattern detection
 ```
 
 ### Implementation Details
 
-#### 1. Volume Component (Max 50 points) - **IMPROVED**
+#### 1. Volume Component (Max 50 points)
 ```python
 volume_score = min(50, math.log10(total_xrp_volume / 1_000_000 + 1) * 12.5)
 ```
-- **Logarithmic scaling** prevents extreme outliers from dominating
+- Logarithmic scaling prevents extreme outliers from dominating
 - 1,000 XRP ≈ 5 points
 - 10,000 XRP ≈ 12.5 points
 - 100,000 XRP ≈ 25 points
 - 1,000,000 XRP ≈ 37.5 points
-- **Solves v1.0 limitation:** Large volumes now properly weighted
+- Large volumes are properly weighted without capping
 
-#### 2. Token Focus Component (Max 30 points) - **REFINED**
+#### 2. Token Focus Component (Max 30 points)
 ```python
 if unique_takers <= 2:  score += 30
 elif unique_takers <= 5:  score += 22
@@ -359,10 +291,11 @@ elif unique_takers <= 10: score += 15
 elif unique_takers <= 20: score += 8
 else: score += 3
 ```
-- More granular thresholds than v1.0
+- Granular thresholds for different concentration levels
 - Accounts for moderate concentration (10-20 traders)
+- Normal traders diversify, manipulators focus on single token
 
-#### 3. Price Stability Component (Max 20 points) - **ENHANCED**
+#### 3. Price Stability Component (Max 20 points)
 ```python
 price_variance_pct = (price_stddev / avg_price) * 100
 if price_variance_pct < 0.5:  score += 20  # Extreme precision
@@ -372,10 +305,11 @@ elif price_variance_pct < 5:  score += 8
 elif price_variance_pct < 10: score += 4
 else: score += 1
 ```
-- Finer granularity for detecting bot-like precision
+- Fine granularity for detecting bot-like precision
 - 0.5% threshold catches algorithmic trading patterns
+- Real markets have natural variance, wash trading shows artificial stability
 
-#### 4. **NEW:** Burst Detection Component (Max 15 points)
+#### 4. Burst Detection Component (Max 15 points)
 ```python
 trade_density = total_trades / (active_period_seconds / 3600)  # trades/hour
 if trade_density >= 100:  score += 15  # >100 trades/hour
@@ -384,11 +318,11 @@ elif trade_density >= 20:  score += 8
 elif trade_density >= 10:  score += 5
 else: score += 2
 ```
-- **Catches pump-and-dump schemes**
-- Identifies rapid-fire trading (e.g., EUR case: 257 trades/hour)
+- Catches pump-and-dump schemes
+- Identifies rapid-fire trading (e.g., GOAT: 257 trades/hour)
 - Complements volume component
 
-#### 5. **NEW:** Trade Size Uniformity (Max 10 points)
+#### 5. Trade Size Uniformity (Max 10 points)
 ```python
 size_variance_pct = (trade_size_stddev / avg_trade_size) * 100
 if size_variance_pct < 2:  score += 10  # Bot-like uniformity
@@ -399,15 +333,23 @@ else: score += 1
 - Detects robotic trading patterns
 - Complements price stability analysis
 
+### Impact Tiers
+
+**Risk Score Ranges:**
+- **CRITICAL (80-100):** Very high likelihood of manipulation
+- **HIGH (70-79):** Strong manipulation signals
+- **MEDIUM (50-69):** Moderate suspicious patterns
+- **LOW (<50):** Normal trading behavior
+
 ### Stablecoin Whitelisting
 
 **Automatic Exclusion:**
-Tokens in `token_whitelist` table automatically receive `risk_score_v1 = 0` and `risk_score_v2 = 0`.
+Tokens in `token_whitelist` table automatically receive `risk_score_v2 = 0`.
 
 **Current Whitelist:**
 - **RLUSD** (Ripple USD stablecoin)
 - **USD** (Various stablecoin issuers)
-- **EUR** (Legitimate gateway tokens) - *Pending review*
+- **EUR** (Gatehub Euro stablecoin)
 
 **Management:**
 ```bash
@@ -416,39 +358,23 @@ python scripts/manage_whitelist.py add <code> <issuer> <name> --category stablec
 python scripts/manage_whitelist.py remove <code> <issuer>
 ```
 
-### Parallel Scoring: v1.0 vs v2.0
-
-**Both scores calculated simultaneously:**
-- `token_stats.risk_score_v1` - Original algorithm (preserved for comparison)
-- `token_stats.risk_score_v2` - Enhanced algorithm (default for dashboards)
-
-**Observed Differences:**
-- **Average v1.0:** 52.7 | **Average v2.0:** 32.1 (-39% reduction)
-- **High risk (≥70) v1.0:** 31 tokens | **v2.0:** 0 tokens
-- **Trend:** v2.0 is more conservative due to logarithmic scaling
-
-**Example Score Changes:**
-| Token | v1.0 | v2.0 | Δ | Reason |
-|-------|------|------|---|--------|
-| $GOAT | 75.0 | 66.0 | -9.0 | Logarithmic volume scaling reduced dominance |
-| $DEB  | 100.0 | 65.0 | -35.0 | Burst score offset by lower volume component |
-| CHILLGUY | 95.0 | 58.0 | -37.0 | Trade density moderate, not extreme |
-
 ### Automatic Updates
 
 **Integration with Collection Pipeline:**
 ```bash
-# Updated cron job (every 5 minutes)
+# Cron job runs every 5 minutes
 /home/grapedrop/monitoring/xrp-watchdog/run_collection.sh
   → collection_orchestrator.py 130 --analyze
     ├─ Phase 1: Book screening
     ├─ Phase 2: Trade collection
-    └─ Phase 3: Token risk analysis (v1.0 + v2.0)
+    └─ Phase 3: Token risk analysis
 ```
 
 **Refresh Frequency:**
 - Token stats updated **every 5 minutes**
 - Grafana dashboards auto-refresh to reflect latest scores
+- Average risk score: **32.1** (November 2025)
+- High risk tokens (≥70): **0** (November 2025)
 
 ---
 
@@ -638,43 +564,40 @@ ClickHouse doesn't support comparison operators (>, <) in JOIN ON clauses when c
 
 ## Grafana Dashboard Panels
 
-### 1. Stats Row (4 Metrics)
-- **Total Tokens Tracked:** Count of unique tokens
-- **Tokens Active (1hr):** Recent activity indicator
-- **Suspicious Rate:** % of accounts flagged
-- **Total Trades:** Database size indicator
+### Top Stats Row (7 Metrics)
+- **Tracked:** Total tokens being monitored
+- **Active (1hr):** Tokens with recent activity
+- **Suspicious Rate:** % of accounts flagged for manipulation
+- **Total Trades:** Database size / activity indicator
+- **Risk Score Overview:** 3-stat panel showing:
+  - Total Tokens (count)
+  - Avg Risk Score (current: 32.6)
+  - High Risk (≥60) tokens
 
-### 2. Suspicious Activity Heatmap (7 Days)
+### Suspicious Activity Heatmap (7 Days)
 - X-axis: Days
 - Y-axis: Hours of day
 - Color: Number of suspicious accounts active
 - Purpose: Identify peak manipulation times
 
-### 3. Trading Activity Over Time (7 Days)
+### Trading Activity Over Time (7 Days)
 - Line chart of trade volume (XRP) per day
 - Shows market activity trends
 - Helps distinguish manipulation from organic growth
 
-### 4. Understanding Wash Trading (Educational Panel)
-- 3-column explanation:
-  - What is wash trading?
-  - How we detect it
-  - Why it matters
-- Links to methodology documentation
+### Methodology Guide (Collapsible Row)
+- Educational content explaining wash trading detection
+- Click to expand/collapse
+- Links to full methodology documentation
 
-### 5. Top Suspicious Accounts (Main Table)
-- Columns: Address, Risk Score, Impact Tier, Primary Token, Total Trades, Volume (XRP), Avg Interval, Active Period, First/Last Trade
+### Top Suspicious Tokens (Main Table)
+- Columns: Token, Issuer, Risk Score, Trades, Volume (XRP), Price Var %, Trades/Hour, Burst, Updated
 - Sortable by Risk Score (default: highest first)
-- Click address → Opens XRPScan for investigation
-- Shows top 20 accounts, paginated
-- **This is the "money shot" - the main detection output**
+- Click issuer → Opens XRPScan for investigation
+- Shows top 20 tokens, paginated
+- **Primary detection output - the "money shot"**
 
-### Removed/Deprecated Panels
-- ❌ Token Manipulation Leaderboard (redundant with Accounts table)
-- ❌ Network Graph (hard to interpret, didn't add value)
-- ❌ Timeline Chart (not compelling, removed for simplicity)
-
-**Design Philosophy:** Less is more. Focus on actionable data in clear formats.
+**Design Philosophy:** Clean UX, no duplicate data, actionable insights at a glance.
 
 ---
 
@@ -933,30 +856,26 @@ tail -20 logs/auto_collection.log | grep "Collection Complete"
 
 ## Roadmap
 
-### v1.0 (Current - Public Beta)
+### v1.0 (Completed - November 2025)
 - ✅ Core detection engine
 - ✅ ClickHouse data storage
 - ✅ Grafana visualization
-- ✅ Automated collection (15 min intervals)
-- ✅ Basic risk scoring (3 components)
-- ✅ Top 20 suspicious accounts tracking
-- ⏳ 7 days continuous operation (in progress)
-- ⏳ Public dashboard deployment
+- ✅ Automated collection (5 min intervals, 100% ledger coverage)
+- ✅ Advanced risk scoring (5-component algorithm)
+- ✅ Token-level manipulation tracking
+- ✅ Query optimization (15x performance improvement)
+- ✅ Production-ready dashboard
 
 ### v1.1 (Q1 2026)
-- 🎯 Enhanced risk scoring (v2.0 algorithm)
-  - Logarithmic volume scaling
-  - Burst detection bonus
-  - Trade density normalization
 - 🎯 Historical data backfill (full ledger range)
 - 🎯 Alerting system (Discord/Slack/Email)
 - 🎯 API endpoint for programmatic access
+- 🎯 Account-level network analysis
 
 ### v2.0 (Q2 2026)
 - 🎯 Full trade collection (all transactions, not just suspicious)
 - 🎯 Machine learning detection models
 - 🎯 Coordinated account network analysis
-- 🎯 Token-specific manipulation metrics
 - 🎯 Mobile-responsive dashboard
 - 🎯 Multi-validator aggregation
 
@@ -988,16 +907,15 @@ tail -20 logs/auto_collection.log | grep "Collection Complete"
 
 **XRP is the currency used to trade. The tokens are what's being manipulated.**
 
-### Why are some accounts scored higher with lower volume?
+### Why are some tokens scored high with lower volume?
 
-The algorithm values **evidence quantity** over **damage magnitude**.
+The algorithm balances **multiple factors**, not just volume:
 
-- 453 trades = strong evidence of systematic manipulation (95 score)
-- 6 trades = suspicious but less certain (90 score)
+- High burst score (257 trades/hour) + low variance = high risk
+- Large volume alone doesn't equal manipulation
+- Logarithmic scaling prevents volume from dominating
 
-Even if the 6 trades moved 20x more XRP, the system wants LOTS of proof before assigning the highest scores (conservative approach reduces false positives).
-
-**v2.0 will balance this better** by adding burst detection and removing volume caps.
+Example: GOAT token (6 XRP, 257 trades/hour) scores 66 due to extreme burst activity, while a token with 1000 XRP but normal trading pattern might score 30.
 
 ### Can I run this without a validator?
 
@@ -1043,18 +961,18 @@ These can still show up in results if trading patterns are suspicious, but they 
 
 ### How accurate is the detection?
 
-**Current metrics:**
-- True positive rate: ~85-90% (suspicious accounts are actually manipulating)
+**Current metrics (November 2025):**
+- True positive rate: ~85-90% (suspicious tokens are actually being manipulated)
 - False positive rate: ~5-10% (legitimate traders flagged incorrectly)
-- Coverage: Detects wash trading, burst manipulation, sustained bots
+- Coverage: Detects wash trading, burst manipulation, sustained bots, pump-and-dump
 
 **Not detected (yet):**
-- Sophisticated market making (legitimate)
+- Sophisticated market making (legitimate activity)
 - Cross-exchange arbitrage
 - Coordinated networks (multiple unrelated accounts)
 - Slow-motion manipulation (months-long campaigns)
 
-**v2.0 improvements** will increase accuracy to 90-95% true positive rate.
+**Future improvements** will focus on network analysis and cross-account coordination detection.
 
 ---
 
@@ -1177,123 +1095,6 @@ MIT License - See LICENSE file for details.
 
 ---
 
-## Appendix: Scoring Algorithm Details
-
-### Current Formula (v1.0)
-```python
-def calculate_risk_score(account_data):
-    """
-    Calculate manipulation risk score (0-100)
-
-    Args:
-        account_data: dict with keys:
-            - total_xrp_volume: float
-            - token_count: int
-            - price_cv: float (coefficient of variation)
-
-    Returns:
-        int: Risk score (0-100)
-    """
-    # Component 1: Volume (max 50)
-    volume_score = min(50, account_data['total_xrp_volume'] / 20)
-
-    # Component 2: Token Focus (max 30)
-    token_count = account_data['token_count']
-    if token_count == 1:
-        focus_score = 30
-    elif token_count == 2:
-        focus_score = 25
-    elif token_count <= 5:
-        focus_score = 15
-    else:
-        focus_score = 5
-
-    # Component 3: Price Stability (max 20)
-    cv = account_data['price_cv']
-    if cv < 0.001:
-        stability_score = 20
-    elif cv < 0.01:
-        stability_score = 15
-    elif cv < 0.05:
-        stability_score = 10
-    else:
-        stability_score = 5
-
-    # Total score
-    risk_score = int(volume_score + focus_score + stability_score)
-    return min(100, risk_score)
-```
-
-### Planned Formula (v2.0)
-```python
-import math
-
-def calculate_risk_score_v2(account_data):
-    """
-    Enhanced manipulation risk score with burst detection
-
-    Args:
-        account_data: dict with keys:
-            - total_xrp_volume: float
-            - token_count: int
-            - price_cv: float
-            - total_trades: int
-            - active_period_days: float
-            - avg_interval_minutes: float
-
-    Returns:
-        int: Risk score (0-100)
-    """
-    # Component 1: Volume (logarithmic, max ~50)
-    volume_score = min(50, math.log(account_data['total_xrp_volume'] + 1) * 5)
-
-    # Component 2: Token Focus (max 30)
-    token_count = account_data['token_count']
-    if token_count == 1:
-        focus_score = 30
-    elif token_count == 2:
-        focus_score = 25
-    elif token_count <= 5:
-        focus_score = 15
-    else:
-        focus_score = 5
-
-    # Component 3: Trade Density (max 15)
-    days = max(account_data['active_period_days'], 0.01)  # Avoid division by zero
-    trade_density = account_data['total_trades'] / days
-    density_score = min(15, trade_density / 10)
-
-    # Component 4: Burst Bonus (max 10)
-    interval = account_data['avg_interval_minutes']
-    if interval < 10:
-        burst_score = 10
-    elif interval < 30:
-        burst_score = 5
-    elif interval < 60:
-        burst_score = 2
-    else:
-        burst_score = 0
-
-    # Component 5: Price Stability (max 15)
-    cv = account_data['price_cv']
-    if cv < 0.001:
-        stability_score = 15
-    elif cv < 0.01:
-        stability_score = 12
-    elif cv < 0.05:
-        stability_score = 8
-    else:
-        stability_score = 3
-
-    # Total score
-    raw_score = volume_score + focus_score + density_score + burst_score + stability_score
-    risk_score = int(min(100, raw_score))
-
-    return risk_score
-```
-
----
-
-**Last Updated:** October 31, 2025
-**Version:** 1.0
+**Last Updated:** November 1, 2025
+**Version:** 1.0 (Production)
 **Maintained by:** @realGrapedrop

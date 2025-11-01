@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 XRP Watchdog - Token Risk Analyzer
-Calculates both v1.0 and v2.0 risk scores for tokens
-Populates the token_stats table with aggregated metrics
+Calculates manipulation risk scores for tokens using advanced detection algorithms
+Populates the token_stats table with aggregated metrics and risk assessments
 """
 
 import sys
@@ -27,65 +27,21 @@ class TokenAnalyzer:
         )
         self.start_time = None
 
-    def calculate_risk_score_v1(self, stats: dict, is_whitelisted: bool) -> float:
+    # Legacy v1.0 algorithm - DEPRECATED November 2025
+    # Removed in favor of v2.0 algorithm with logarithmic scaling and burst detection
+    # def calculate_risk_score_v1(self, stats: dict, is_whitelisted: bool) -> float:
+    #     ...
+
+    def calculate_risk_score(self, stats: dict, is_whitelisted: bool) -> float:
         """
-        Calculate v1.0 risk score (0-100)
-        Original algorithm: Few participants + Low price variance + Low trade size variance
-        """
-        if is_whitelisted:
-            return 0.0
+        Calculate manipulation risk score (0-100)
 
-        score = 0.0
-
-        # Few unique participants (max 40 points)
-        if stats['unique_takers'] <= 2:
-            score += 40
-        elif stats['unique_takers'] <= 5:
-            score += 30
-        elif stats['unique_takers'] <= 10:
-            score += 20
-        else:
-            score += 10
-
-        # Low price variance (max 25 points)
-        price_var = stats['price_variance_percent']
-        if price_var < 1:
-            score += 25
-        elif price_var < 5:
-            score += 15
-        elif price_var < 10:
-            score += 10
-        else:
-            score += 5
-
-        # Low trade size variance (max 20 points)
-        size_var = stats['size_variance_percent']
-        if size_var < 5:
-            score += 20
-        elif size_var < 10:
-            score += 15
-        else:
-            score += 5
-
-        # High trades per account (max 15 points)
-        trades_per_acc = stats['trades_per_account']
-        if trades_per_acc >= 10:
-            score += 15
-        elif trades_per_acc >= 5:
-            score += 10
-        else:
-            score += 5
-
-        return min(100.0, score)
-
-    def calculate_risk_score_v2(self, stats: dict, is_whitelisted: bool) -> float:
-        """
-        Calculate v2.0 risk score (0-100)
-        Enhanced algorithm with:
-        - Logarithmic volume scaling
-        - Burst detection (temporal clustering)
-        - Enhanced price stability
-        - Trade size uniformity detection
+        Algorithm components:
+        - Logarithmic volume scaling (max 50 points)
+        - Token focus / account concentration (max 30 points)
+        - Price stability / variance detection (max 20 points)
+        - Burst detection / temporal clustering (max 15 points)
+        - Trade size uniformity / bot detection (max 10 points)
         """
         if is_whitelisted:
             return 0.0
@@ -172,7 +128,7 @@ class TokenAnalyzer:
         """Refresh token_stats table with latest data"""
         self.start_time = time.time()
 
-        print("=== Token Risk Analyzer v2.0 ===")
+        print("=== Token Risk Analyzer ===")
         print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
         # Step 1: Query base token statistics
@@ -264,7 +220,7 @@ class TokenAnalyzer:
             return
 
         # Step 2: Calculate risk scores and prepare data
-        print("Step 2: Calculating risk scores (v1.0 and v2.0)...")
+        print("Step 2: Calculating risk scores...")
         token_stats_data = []
 
         for row in tokens:
@@ -302,8 +258,7 @@ class TokenAnalyzer:
             whitelist_cat = stats['whitelist_category'] if stats['whitelist_category'] else 'none'
 
             # Calculate risk scores
-            risk_v1 = self.calculate_risk_score_v1(stats, is_whitelisted)
-            risk_v2 = self.calculate_risk_score_v2(stats, is_whitelisted)
+            risk_score = self.calculate_risk_score(stats, is_whitelisted)
             burst = self.calculate_burst_score(stats['trade_density'], is_whitelisted)
 
             # Prepare row for insertion
@@ -331,8 +286,7 @@ class TokenAnalyzer:
                 stats['size_variance_percent'],
                 stats['trades_per_account'],
                 stats['xrp_volume_per_account'],
-                risk_v1,
-                risk_v2,
+                risk_score,
                 burst,
                 datetime.now()
             ))
@@ -352,8 +306,8 @@ class TokenAnalyzer:
                 "avg_price", "price_stddev", "avg_trade_xrp", "trade_size_stddev",
                 "is_whitelisted", "whitelist_category", "avg_time_gap_seconds",
                 "trade_density", "price_variance_percent", "size_variance_percent",
-                "trades_per_account", "xrp_volume_per_account", "risk_score_v1",
-                "risk_score_v2", "burst_score", "last_updated"
+                "trades_per_account", "xrp_volume_per_account", "risk_score_v2",
+                "burst_score", "last_updated"
             ]
         )
         print(f"  ✓ Inserted {len(token_stats_data)} token statistics\n")
@@ -368,15 +322,15 @@ class TokenAnalyzer:
 
     def print_summary(self):
         """Print summary of risk scores"""
-        print("="*70)
-        print("Top 10 Tokens by Risk Score v2.0:")
-        print("="*70)
+        print("="*80)
+        print("Top 10 Tokens by Risk Score:")
+        print("="*80)
 
         result = self.client.query("""
             SELECT
                 CASE
                   WHEN length(token_code) = 40 THEN
-                    replaceRegexpAll(unhex(token_code), '\0', '')
+                    upper(replaceRegexpAll(unhex(token_code), '\0', ''))
                   ELSE upper(token_code)
                 END as token_code,
                 SUBSTRING(token_issuer, 1, 10) || '...' as issuer_short,
@@ -384,9 +338,7 @@ class TokenAnalyzer:
                 unique_takers,
                 ROUND(total_xrp_volume, 0) as volume_xrp,
                 is_whitelisted,
-                ROUND(risk_score_v1, 1) as v1,
-                ROUND(risk_score_v2, 1) as v2,
-                ROUND(risk_score_v2 - risk_score_v1, 1) as diff,
+                ROUND(risk_score_v2, 1) as risk,
                 ROUND(trade_density, 1) as density,
                 ROUND(burst_score, 0) as burst
             FROM token_stats
@@ -394,8 +346,8 @@ class TokenAnalyzer:
             LIMIT 10
         """)
 
-        print(f"{'Token':<12} {'Issuer':<14} {'Trades':<7} {'Takers':<7} {'Volume':<12} {'WL':<3} {'v1.0':<5} {'v2.0':<5} {'Δ':<6} {'TPH':<6} {'Burst':<5}")
-        print("-"*70)
+        print(f"{'Token':<12} {'Issuer':<14} {'Trades':<7} {'Takers':<7} {'Volume':<12} {'WL':<3} {'Risk':<6} {'TPH':<6} {'Burst':<5}")
+        print("-"*80)
 
         for row in result.result_rows:
             token_code = row[0][:12]
@@ -404,34 +356,30 @@ class TokenAnalyzer:
             takers = row[3]
             volume = f"{row[4]:,.0f}"
             whitelisted = "✓" if row[5] else ""
-            v1 = row[6]
-            v2 = row[7]
-            diff = row[8]
-            density = row[9]
-            burst = row[10]
+            risk = row[6]
+            density = row[7]
+            burst = row[8]
 
-            print(f"{token_code:<12} {issuer:<14} {trades:<7} {takers:<7} {volume:<12} {whitelisted:<3} {v1:<5} {v2:<5} {diff:>+5} {density:<6} {burst:<5}")
+            print(f"{token_code:<12} {issuer:<14} {trades:<7} {takers:<7} {volume:<12} {whitelisted:<3} {risk:<6} {density:<6} {burst:<5}")
 
         print()
 
-        # Compare v1 vs v2 distribution
+        # Summary statistics
         result = self.client.query("""
             SELECT
                 COUNT(*) as total,
-                SUM(IF(risk_score_v1 >= 70, 1, 0)) as high_risk_v1,
-                SUM(IF(risk_score_v2 >= 70, 1, 0)) as high_risk_v2,
+                SUM(IF(risk_score_v2 >= 70, 1, 0)) as high_risk,
                 SUM(IF(is_whitelisted = 1, 1, 0)) as whitelisted,
-                AVG(risk_score_v1) as avg_v1,
-                AVG(risk_score_v2) as avg_v2
+                AVG(risk_score_v2) as avg_risk
             FROM token_stats
         """)
 
         if result.result_rows:
-            total, high_v1, high_v2, whitelisted, avg_v1, avg_v2 = result.result_rows[0]
+            total, high_risk, whitelisted, avg_risk = result.result_rows[0]
             print(f"Total tokens analyzed: {total}")
             print(f"Whitelisted (risk=0): {whitelisted}")
-            print(f"High risk (≥70) - v1.0: {high_v1}  |  v2.0: {high_v2}")
-            print(f"Average risk score - v1.0: {avg_v1:.1f}  |  v2.0: {avg_v2:.1f}")
+            print(f"High risk (≥70): {high_risk}")
+            print(f"Average risk score: {avg_risk:.1f}")
 
 
 def main():
