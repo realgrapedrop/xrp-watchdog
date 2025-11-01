@@ -97,13 +97,15 @@ class CollectionOrchestrator:
             minutes = (seconds % 3600) / 60
             return f"{hours:.1f}h ({minutes:.0f}m)"
     
-    def collect_batch(self, ledger_count: int = 10, start_ledger: Optional[str] = None):
-        """Collect a batch of ledgers"""
+    def collect_batch(self, ledger_count: int = 10, start_ledger: Optional[str] = None,
+                     run_analyzer: bool = False):
+        """Collect a batch of ledgers and optionally run risk analysis"""
         self.start_time = time.time()
-        
+
         print(f"=== Collection Orchestrator Starting ===")
         print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"Batch size: {ledger_count} ledgers")
+        print(f"Run analyzer: {'Yes' if run_analyzer else 'No'}")
         print(f"Using: TradeCollector (getMakerTaker.sh + RippleState extraction)\n")
         
         # Phase 1: Screen for volume
@@ -145,7 +147,27 @@ class CollectionOrchestrator:
         
         phase2_duration = time.time() - phase2_start
         print(f"\nPhase 2 completed in {self.format_duration(phase2_duration)}")
-        
+
+        # Phase 3: Risk analysis (optional)
+        if run_analyzer:
+            phase3_start = time.time()
+            print("\n" + "="*50)
+            print("Phase 3: Running token risk analysis...")
+            try:
+                import sys
+                sys.path.append('/home/grapedrop/monitoring/xrp-watchdog')
+                from analyzers.token_analyzer import TokenAnalyzer
+
+                analyzer = TokenAnalyzer()
+                analyzer.refresh_token_stats()
+
+                phase3_duration = time.time() - phase3_start
+                print(f"\nPhase 3 completed in {self.format_duration(phase3_duration)}")
+            except Exception as e:
+                print(f"  ERROR: {e}")
+                phase3_duration = time.time() - phase3_start
+                print(f"\nPhase 3 failed after {self.format_duration(phase3_duration)}")
+
         # Summary
         total_duration = time.time() - self.start_time
         print("\n" + "="*50)
@@ -153,7 +175,7 @@ class CollectionOrchestrator:
         print(f"Total duration: {self.format_duration(total_duration)}")
         print(f"End time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"Average: {total_duration/ledger_count:.2f}s per ledger")
-        
+
         self.print_summary()
     
     def print_summary(self):
@@ -188,15 +210,18 @@ class CollectionOrchestrator:
 def main():
     """Main entry point"""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="XRP Watchdog Collection Orchestrator")
     parser.add_argument("count", type=int, help="Number of ledgers to collect")
     parser.add_argument("--start", help="Starting ledger index (default: latest)")
-    
+    parser.add_argument("--analyze", action="store_true",
+                       help="Run token risk analysis after collection")
+
     args = parser.parse_args()
-    
+
     orchestrator = CollectionOrchestrator()
-    orchestrator.collect_batch(ledger_count=args.count, start_ledger=args.start)
+    orchestrator.collect_batch(ledger_count=args.count, start_ledger=args.start,
+                              run_analyzer=args.analyze)
 
 if __name__ == "__main__":
     main()

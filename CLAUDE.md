@@ -96,20 +96,35 @@ XRP Watchdog is a real-time wash trading and market manipulation detection syste
 ```
 /home/grapedrop/monitoring/xrp-watchdog/
 ├── collectors/
-│   ├── collection_orchestrator.py     # Main collector (cron: every 15min)
-│   ├── getMakerTaker.sh              # Bash script for trade extraction
-│   └── trade_collector.py            # Trade collection logic
-├── config/
-│   ├── clickhouse_schema.sql         # Database schema
-│   └── token_whitelist.sql           # Stablecoin exclusions
+│   ├── collection_orchestrator.py     # Main collector (cron: every 5min)
+│   ├── book_screener.py               # Phase 1: Volume screening
+│   ├── trade_collector.py             # Phase 2: Trade extraction
+│   └── getMakerTaker.sh               # Bash helper for trade parsing
+├── analyzers/
+│   └── token_analyzer.py              # Phase 3: Risk scoring (v1.0 + v2.0)
+├── sql/
+│   ├── schema.sql                     # Main database schema
+│   └── migrations/
+│       ├── 001_add_token_stats_v2.sql # v2.0 schema migration
+│       └── run_migration.py            # Migration runner
+├── scripts/
+│   └── manage_whitelist.py            # Whitelist management CLI
+├── grafana/
+│   └── token_stats_queries.md         # Dashboard SQL queries
+├── queries/
+│   ├── 01_ping_pong_detector.sql      # Account-level wash trading
+│   ├── 02_high_volume_self_traders.sql
+│   ├── 03_token_manipulation_leaderboard.sql  # Legacy v1.0 query
+│   └── 04_market_impact_leaderboard.sql
 ├── logs/
-│   └── auto_collection.log           # Collection activity log
-├── data/                              # Raw data storage (optional)
-├── docker-compose.yml                # ClickHouse container config
-├── requirements.txt                  # Python dependencies
-├── venv/                             # Python virtual environment
-├── README.md                         # User-facing documentation
-└── CLAUDE.md                         # AI assistant context (this file)
+│   └── auto_collection.log            # Collection activity log
+├── data/                               # Raw data storage
+├── config.env                          # Environment configuration
+├── run_collection.sh                   # Cron wrapper script
+├── requirements.txt                    # Python dependencies
+├── venv/                               # Python virtual environment
+├── README.md                           # User-facing documentation
+└── CLAUDE.md                           # AI assistant context (this file)
 ```
 
 ---
@@ -147,32 +162,82 @@ ORDER BY (time, ledger_index, tx_hash);
 Excludes legitimate stablecoins from manipulation detection:
 - RLUSD (Ripple USD)
 - USDC (Circle USD Coin)
-- USDT (Tether)
-- EUR (Gatehub Euro)
+- EUR (Gatehub Euro stablecoin)
 - Other verified gateway tokens
+
+**Management:**
+```bash
+python scripts/manage_whitelist.py list
+python scripts/manage_whitelist.py add <code> <issuer> <name> --category stablecoin
+```
+
+### Token Statistics Table: `xrp_watchdog.token_stats` ✨ NEW
+
+Aggregated token-level risk metrics (updated every 5 minutes):
+
+```sql
+CREATE TABLE xrp_watchdog.token_stats (
+  token_code String,
+  token_issuer String,
+  total_trades UInt32,
+  unique_takers UInt32,
+  total_xrp_volume Float64,
+  trade_density Float64,           -- Trades per hour
+  risk_score_v1 Float32,            -- Original algorithm
+  risk_score_v2 Float32,            -- Enhanced algorithm
+  burst_score Float32,              -- Temporal clustering detection
+  is_whitelisted UInt8,
+  last_updated DateTime64(3)
+) ENGINE = ReplacingMergeTree(last_updated)
+ORDER BY (risk_score_v2, token_code, token_issuer);
+```
+
+**Key Metrics:**
+- `risk_score_v1`: Legacy scoring (0-100), preserved for comparison
+- `risk_score_v2`: **Current scoring** (0-100) with logarithmic volume scaling
+- `burst_score`: Rapid-fire trading detection (0-100)
+- `trade_density`: Trades per hour (helps identify bot activity)
+
+**Usage in Grafana:**
+```sql
+-- Get top suspicious tokens
+SELECT token_code, risk_score_v2, burst_score
+FROM token_stats
+WHERE is_whitelisted = 0
+ORDER BY risk_score_v2 DESC
+LIMIT 20;
+```
 
 ---
 
 ## Data Collection Flow
 
-### Automated Collection (Every 15 Minutes)
+### Automated Collection (Every 5 Minutes) - 100% Coverage
 
 **Cron Job:**
 ```bash
-*/15 * * * * cd /home/grapedrop/monitoring/xrp-watchdog && source venv/bin/activate && python collectors/collection_orchestrator.py 13 >> logs/auto_collection.log 2>&1
+*/5 * * * * /home/grapedrop/monitoring/xrp-watchdog/run_collection.sh >> logs/auto_collection.log 2>&1
 ```
 
 **Process:**
-1. **Phase 1: Screening (2-3 seconds)**
-   - Query last 13 ledgers from validator
-   - Identify ledgers with suspicious book changes
+1. **Phase 1: Book Screening (~1 second)**
+   - Query last 130 ledgers from validator (5-minute window at ~26 ledgers/min)
+   - Identify ledgers with suspicious volume patterns
    - Flag ledgers for detailed collection
+   - Insert into `book_changes` table
 
-2. **Phase 2: Detailed Collection (1-2 seconds)**
-   - Extract all trades from flagged ledgers
-   - Parse maker/taker relationships
-   - Enrich with RippleState data
-   - Insert into ClickHouse
+2. **Phase 2: Trade Collection (~5-10 seconds)**
+   - Extract all trades from flagged ledgers using getMakerTaker.sh
+   - Parse maker/taker relationships from OfferCreate metadata
+   - Enrich with RippleState balance changes
+   - Insert into `executed_trades` table
+
+3. **Phase 3: Risk Analysis (~0.6 seconds)** ✨ NEW
+   - Aggregate trades by token into statistics
+   - Calculate v1.0 and v2.0 risk scores
+   - Detect burst patterns and trade density
+   - Check whitelist status
+   - Refresh `token_stats` table
 
 3. **Result:**
    - Total duration: 3-5 seconds per batch
@@ -255,42 +320,135 @@ Coefficient of Variation (CV):
 
 ---
 
-## Planned Scoring Improvements (v2.0)
+## ✅ Implemented Scoring Algorithm (v2.0)
 
-### Hybrid Approach: Current + Manipulation Index
+**Status:** Deployed as of October 31, 2025
+**Database Table:** `xrp_watchdog.token_stats`
+**Analyzer Script:** `analyzers/token_analyzer.py`
 
-**Enhanced Formula:**
+### Enhanced Algorithm Components
+
+**Full v2.0 Formula:**
+```python
+Risk Score v2.0 (0-100) =
+  Volume Component (max 50) +           # Logarithmic scaling
+  Token Focus Component (max 30) +      # Account concentration
+  Price Stability Component (max 20) +  # Enhanced variance detection
+  Burst Detection Component (max 15) +  # NEW: Temporal clustering
+  Trade Size Uniformity (max 10)        # NEW: Robotic pattern detection
 ```
-Risk Score (0-100) = Normalize(
-  [Volume: log(volume+1) × 5] +              [Max ~50]
-  [Token Focus: token_focus_points] +        [0-30]
-  [Trade Density: (trades/days) × 2] +       [0-15]
-  [Burst Bonus: (100/interval_min)] +        [0-10]
-  [Price Stability: CV_analysis]             [0-15]
-)
+
+### Implementation Details
+
+#### 1. Volume Component (Max 50 points) - **IMPROVED**
+```python
+volume_score = min(50, math.log10(total_xrp_volume / 1_000_000 + 1) * 12.5)
+```
+- **Logarithmic scaling** prevents extreme outliers from dominating
+- 1,000 XRP ≈ 5 points
+- 10,000 XRP ≈ 12.5 points
+- 100,000 XRP ≈ 25 points
+- 1,000,000 XRP ≈ 37.5 points
+- **Solves v1.0 limitation:** Large volumes now properly weighted
+
+#### 2. Token Focus Component (Max 30 points) - **REFINED**
+```python
+if unique_takers <= 2:  score += 30
+elif unique_takers <= 5:  score += 22
+elif unique_takers <= 10: score += 15
+elif unique_takers <= 20: score += 8
+else: score += 3
+```
+- More granular thresholds than v1.0
+- Accounts for moderate concentration (10-20 traders)
+
+#### 3. Price Stability Component (Max 20 points) - **ENHANCED**
+```python
+price_variance_pct = (price_stddev / avg_price) * 100
+if price_variance_pct < 0.5:  score += 20  # Extreme precision
+elif price_variance_pct < 1:  score += 16
+elif price_variance_pct < 3:  score += 12
+elif price_variance_pct < 5:  score += 8
+elif price_variance_pct < 10: score += 4
+else: score += 1
+```
+- Finer granularity for detecting bot-like precision
+- 0.5% threshold catches algorithmic trading patterns
+
+#### 4. **NEW:** Burst Detection Component (Max 15 points)
+```python
+trade_density = total_trades / (active_period_seconds / 3600)  # trades/hour
+if trade_density >= 100:  score += 15  # >100 trades/hour
+elif trade_density >= 50:  score += 12
+elif trade_density >= 20:  score += 8
+elif trade_density >= 10:  score += 5
+else: score += 2
+```
+- **Catches pump-and-dump schemes**
+- Identifies rapid-fire trading (e.g., EUR case: 257 trades/hour)
+- Complements volume component
+
+#### 5. **NEW:** Trade Size Uniformity (Max 10 points)
+```python
+size_variance_pct = (trade_size_stddev / avg_trade_size) * 100
+if size_variance_pct < 2:  score += 10  # Bot-like uniformity
+elif size_variance_pct < 5:  score += 7
+elif size_variance_pct < 10: score += 4
+else: score += 1
+```
+- Detects robotic trading patterns
+- Complements price stability analysis
+
+### Stablecoin Whitelisting
+
+**Automatic Exclusion:**
+Tokens in `token_whitelist` table automatically receive `risk_score_v1 = 0` and `risk_score_v2 = 0`.
+
+**Current Whitelist:**
+- **RLUSD** (Ripple USD stablecoin)
+- **USD** (Various stablecoin issuers)
+- **EUR** (Legitimate gateway tokens) - *Pending review*
+
+**Management:**
+```bash
+python scripts/manage_whitelist.py list
+python scripts/manage_whitelist.py add <code> <issuer> <name> --category stablecoin
+python scripts/manage_whitelist.py remove <code> <issuer>
 ```
 
-**Key Improvements:**
+### Parallel Scoring: v1.0 vs v2.0
 
-1. **Logarithmic Volume Scaling**
-   - Eliminates hard cap problem
-   - Large volumes matter more (but not overwhelmingly)
-   - `log(1,000) × 5 = 35 points`
-   - `log(100,000) × 5 = 58 points` (scaled to 50 max)
+**Both scores calculated simultaneously:**
+- `token_stats.risk_score_v1` - Original algorithm (preserved for comparison)
+- `token_stats.risk_score_v2` - Enhanced algorithm (default for dashboards)
 
-2. **Burst Detection**
-   - Identifies quick pump-and-dump schemes
-   - `100 ÷ avg_interval_minutes`
-   - 10 min intervals = 10 points
-   - 60 min intervals = 1.7 points
+**Observed Differences:**
+- **Average v1.0:** 52.7 | **Average v2.0:** 32.1 (-39% reduction)
+- **High risk (≥70) v1.0:** 31 tokens | **v2.0:** 0 tokens
+- **Trend:** v2.0 is more conservative due to logarithmic scaling
 
-3. **Trade Density Normalization**
-   - Measures sustained manipulation intensity
-   - `total_trades ÷ active_period_days`
-   - 100 trades/day = highly automated
-   - 5 trades/day = occasional activity
+**Example Score Changes:**
+| Token | v1.0 | v2.0 | Δ | Reason |
+|-------|------|------|---|--------|
+| $GOAT | 75.0 | 66.0 | -9.0 | Logarithmic volume scaling reduced dominance |
+| $DEB  | 100.0 | 65.0 | -35.0 | Burst score offset by lower volume component |
+| CHILLGUY | 95.0 | 58.0 | -37.0 | Trade density moderate, not extreme |
 
-**Result:** CORE (burst, high volume) and TAZZ (sustained, bot-like) both score 90-95+ appropriately.
+### Automatic Updates
+
+**Integration with Collection Pipeline:**
+```bash
+# Updated cron job (every 5 minutes)
+/home/grapedrop/monitoring/xrp-watchdog/run_collection.sh
+  → collection_orchestrator.py 130 --analyze
+    ├─ Phase 1: Book screening
+    ├─ Phase 2: Trade collection
+    └─ Phase 3: Token risk analysis (v1.0 + v2.0)
+```
+
+**Refresh Frequency:**
+- Token stats updated **every 5 minutes**
+- Grafana dashboards auto-refresh to reflect latest scores
 
 ---
 
