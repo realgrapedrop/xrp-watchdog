@@ -29,7 +29,7 @@ SELECT
         upper(replaceRegexpAll(unhex(token_code), '\0', ''))
       ELSE upper(token_code)
     END as "Token",
-    SUBSTRING(token_issuer, 1, 20) || '...' as "Issuer",
+    token_issuer as "Issuer",
     ROUND(risk_score, 1) as "Risk Score",
     total_trades as "Trades",
     ROUND(total_xrp_volume, 0) as "Volume (XRP)",
@@ -44,7 +44,11 @@ ORDER BY risk_score DESC
 LIMIT 20
 ```
 
-**Note:** This query includes hex decoding for token codes. Tokens with 40-character hex codes (like `0000000000000000000000004F504D0000000000`) are decoded to their ASCII representation (e.g., "OPM").
+**Panel Configuration:**
+- **Hex Decoding**: Token codes in 40-character hex format are automatically decoded to ASCII (e.g., `0000000000000000000000004F504D0000000000` → "OPM")
+- **Column Width**: Set "Issuer" column min width to 400px in Overrides to show full XRPL addresses
+- **Sorting**: Add Transform → Sort by "Risk Score" (Descending) to ensure highest risk tokens appear first
+- **Links**: Set "Issuer" column as clickable link to `https://xrpscan.com/account/${__value.raw}`
 
 ## Top Suspicious Accounts
 
@@ -58,7 +62,7 @@ SELECT
         upper(replaceRegexpAll(unhex(token_code), '\0', ''))
       ELSE upper(token_code)
     END as "Token",
-    SUBSTRING(taker, 1, 20) || '...' as "Account",
+    taker as "Account",
     COUNT(DISTINCT tx_hash) as "Trades",
     ROUND(SUM(abs(exec_xrp)), 0) as "Volume (XRP)",
     MIN(time) as "First Seen",
@@ -77,6 +81,10 @@ ORDER BY COUNT(DISTINCT tx_hash) DESC
 LIMIT 30
 ```
 
+**Panel Configuration:**
+- **Column Width**: Set "Account" column min width to 400px to show full XRPL addresses
+- **Links**: Set "Account" column as clickable link to `https://xrpscan.com/account/${__value.raw}`
+
 ## Whitelisted Tokens Panel
 
 **Query Name:** Whitelisted Tokens
@@ -89,7 +97,7 @@ SELECT
         upper(replaceRegexpAll(unhex(token_code), '\0', ''))
       ELSE upper(token_code)
     END as "Token",
-    SUBSTRING(token_issuer, 1, 20) || '...' as "Issuer",
+    token_issuer as "Issuer",
     whitelist_category as "Category",
     total_trades as "Trades",
     ROUND(total_xrp_volume, 0) as "Volume (XRP)",
@@ -98,6 +106,10 @@ FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 1
 ORDER BY total_xrp_volume DESC
 ```
+
+**Panel Configuration:**
+- **Column Width**: Set "Issuer" column min width to 400px to show full XRPL addresses
+- **Links**: Set "Issuer" column as clickable link to `https://xrpscan.com/account/${__value.raw}`
 
 ## Methodology Guide / Learning Panel
 
