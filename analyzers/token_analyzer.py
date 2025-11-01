@@ -306,7 +306,7 @@ class TokenAnalyzer:
                 "avg_price", "price_stddev", "avg_trade_xrp", "trade_size_stddev",
                 "is_whitelisted", "whitelist_category", "avg_time_gap_seconds",
                 "trade_density", "price_variance_percent", "size_variance_percent",
-                "trades_per_account", "xrp_volume_per_account", "risk_score_v2",
+                "trades_per_account", "xrp_volume_per_account", "risk_score",
                 "burst_score", "last_updated"
             ]
         )
@@ -338,11 +338,11 @@ class TokenAnalyzer:
                 unique_takers,
                 ROUND(total_xrp_volume, 0) as volume_xrp,
                 is_whitelisted,
-                ROUND(risk_score_v2, 1) as risk,
+                ROUND(risk_score, 1) as risk,
                 ROUND(trade_density, 1) as density,
                 ROUND(burst_score, 0) as burst
             FROM token_stats
-            ORDER BY risk_score_v2 DESC
+            ORDER BY risk_score DESC
             LIMIT 10
         """)
 
@@ -368,9 +368,9 @@ class TokenAnalyzer:
         result = self.client.query("""
             SELECT
                 COUNT(*) as total,
-                SUM(IF(risk_score_v2 >= 70, 1, 0)) as high_risk,
+                SUM(IF(risk_score >= 70, 1, 0)) as high_risk,
                 SUM(IF(is_whitelisted = 1, 1, 0)) as whitelisted,
-                AVG(risk_score_v2) as avg_risk
+                AVG(risk_score) as avg_risk
             FROM token_stats
         """)
 

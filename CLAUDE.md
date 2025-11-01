@@ -183,26 +183,26 @@ CREATE TABLE xrp_watchdog.token_stats (
   unique_takers UInt32,
   total_xrp_volume Float64,
   trade_density Float64,           -- Trades per hour
-  risk_score_v2 Float32,            -- Manipulation risk score (0-100)
+  risk_score Float32,            -- Manipulation risk score (0-100)
   burst_score Float32,              -- Temporal clustering detection
   is_whitelisted UInt8,
   last_updated DateTime64(3)
 ) ENGINE = ReplacingMergeTree(last_updated)
-ORDER BY (risk_score_v2, token_code, token_issuer);
+ORDER BY (risk_score, token_code, token_issuer);
 ```
 
 **Key Metrics:**
-- `risk_score_v2`: Manipulation risk score (0-100) with logarithmic volume scaling
+- `risk_score`: Manipulation risk score (0-100) with logarithmic volume scaling
 - `burst_score`: Rapid-fire trading detection (0-100)
 - `trade_density`: Trades per hour (helps identify bot activity)
 
 **Usage in Grafana:**
 ```sql
 -- Get top suspicious tokens
-SELECT token_code, risk_score_v2, burst_score
+SELECT token_code, risk_score, burst_score
 FROM token_stats
 WHERE is_whitelisted = 0
-ORDER BY risk_score_v2 DESC
+ORDER BY risk_score DESC
 LIMIT 20;
 ```
 
@@ -344,7 +344,7 @@ else: score += 1
 ### Stablecoin Whitelisting
 
 **Automatic Exclusion:**
-Tokens in `token_whitelist` table automatically receive `risk_score_v2 = 0`.
+Tokens in `token_whitelist` table automatically receive `risk_score = 0`.
 
 **Current Whitelist:**
 - **RLUSD** (Ripple USD stablecoin)

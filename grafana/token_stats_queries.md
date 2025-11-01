@@ -8,8 +8,8 @@
 ```sql
 SELECT
     COUNT(*) as total_tokens,
-    SUM(IF(risk_score_v2 >= 70, 1, 0)) as high_risk_v2,
-    AVG(risk_score_v2) as avg_risk_v2
+    SUM(IF(risk_score >= 70, 1, 0)) as high_risk_v2,
+    AVG(risk_score) as avg_risk_v2
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
 ```
@@ -27,14 +27,14 @@ SELECT
     unique_takers,
     ROUND(total_xrp_volume, 0) as volume_xrp,
     ROUND(risk_score_v1, 1) as score_v1,
-    ROUND(risk_score_v2, 1) as score_v2,
-    ROUND(risk_score_v2 - risk_score_v1, 1) as score_diff,
+    ROUND(risk_score, 1) as score_v2,
+    ROUND(risk_score - risk_score_v1, 1) as score_diff,
     ROUND(trade_density, 1) as trades_per_hour,
     ROUND(burst_score, 0) as burst,
     last_updated
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
-ORDER BY risk_score_v2 DESC
+ORDER BY risk_score DESC
 LIMIT 20
 ```
 
@@ -62,10 +62,10 @@ UNION ALL
 
 SELECT
     CASE
-        WHEN risk_score_v2 < 20 THEN '0-20'
-        WHEN risk_score_v2 < 40 THEN '20-40'
-        WHEN risk_score_v2 < 60 THEN '40-60'
-        WHEN risk_score_v2 < 80 THEN '60-80'
+        WHEN risk_score < 20 THEN '0-20'
+        WHEN risk_score < 40 THEN '20-40'
+        WHEN risk_score < 60 THEN '40-60'
+        WHEN risk_score < 80 THEN '60-80'
         ELSE '80-100'
     END as score_range,
     COUNT(*) as count_v2
@@ -88,7 +88,7 @@ SELECT
     ROUND(trade_density, 1) as trades_per_hour,
     ROUND(avg_time_gap_seconds, 1) as avg_gap_seconds,
     ROUND(burst_score, 0) as burst_score,
-    ROUND(risk_score_v2, 1) as risk_v2
+    ROUND(risk_score, 1) as risk_v2
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
   AND burst_score >= 50
@@ -104,7 +104,7 @@ LIMIT 20
 ```sql
 SELECT
     risk_score_v1 as x_axis,
-    risk_score_v2 as y_axis,
+    risk_score as y_axis,
     token_code as label,
     total_trades as size
 FROM xrp_watchdog.token_stats
@@ -143,13 +143,13 @@ SELECT
     total_trades,
     unique_takers,
     ROUND(risk_score_v1, 1) as v1_score,
-    ROUND(risk_score_v2, 1) as v2_score,
-    ROUND(risk_score_v2 - risk_score_v1, 1) as score_change,
+    ROUND(risk_score, 1) as v2_score,
+    ROUND(risk_score - risk_score_v1, 1) as score_change,
     'More Lenient' as v2_effect
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
-  AND (risk_score_v2 - risk_score_v1) < -10
-ORDER BY (risk_score_v2 - risk_score_v1) ASC
+  AND (risk_score - risk_score_v1) < -10
+ORDER BY (risk_score - risk_score_v1) ASC
 LIMIT 10
 
 UNION ALL
@@ -161,13 +161,13 @@ SELECT
     total_trades,
     unique_takers,
     ROUND(risk_score_v1, 1) as v1_score,
-    ROUND(risk_score_v2, 1) as v2_score,
-    ROUND(risk_score_v2 - risk_score_v1, 1) as score_change,
+    ROUND(risk_score, 1) as v2_score,
+    ROUND(risk_score - risk_score_v1, 1) as score_change,
     'Stricter' as v2_effect
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
-  AND (risk_score_v2 - risk_score_v1) > 10
-ORDER BY (risk_score_v2 - risk_score_v1) DESC
+  AND (risk_score - risk_score_v1) > 10
+ORDER BY (risk_score - risk_score_v1) DESC
 LIMIT 10
 ```
 
@@ -183,12 +183,12 @@ LIMIT 10
 SELECT
     last_updated as time,
     token_code,
-    risk_score_v2 as risk_score
+    risk_score as risk_score
 FROM xrp_watchdog.token_stats
 WHERE token_code IN (
     SELECT token_code FROM xrp_watchdog.token_stats
     WHERE is_whitelisted = 0
-    ORDER BY risk_score_v2 DESC
+    ORDER BY risk_score DESC
     LIMIT 5
 )
 ORDER BY time ASC
@@ -227,11 +227,11 @@ WITH components AS (
             WHEN trade_density >= 10 THEN 5
             ELSE 2
         END as burst_component,
-        risk_score_v2
+        risk_score
     FROM xrp_watchdog.token_stats
     WHERE is_whitelisted = 0
-      AND risk_score_v2 >= 50
-    ORDER BY risk_score_v2 DESC
+      AND risk_score >= 50
+    ORDER BY risk_score DESC
     LIMIT 10
 )
 SELECT
@@ -240,7 +240,7 @@ SELECT
     ROUND(concentration_component, 1) as concentration,
     ROUND(price_stability_component, 1) as price_stability,
     ROUND(burst_component, 1) as burst,
-    ROUND(risk_score_v2, 1) as total
+    ROUND(risk_score, 1) as total
 FROM components
 ```
 
@@ -287,6 +287,6 @@ $token_filter: Token code filter (default: %)
 Then use in queries like:
 ```sql
 WHERE total_trades >= $min_trades
-  AND risk_score_v2 >= $min_risk
+  AND risk_score >= $min_risk
   AND token_code LIKE '$token_filter'
 ```
