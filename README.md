@@ -16,6 +16,17 @@ XRP Watchdog is a sophisticated monitoring system that analyzes DEX activity on 
 - **Account Tracking**: Monitors suspicious accounts trading high-risk tokens
 - **Automated Analysis**: Self-healing system with comprehensive logging
 
+## Dashboard Screenshot
+
+![XRP Watchdog Dashboard](images/dashboard-screenshot.png)
+
+The dashboard provides real-time insights into token manipulation on the XRP Ledger DEX, featuring:
+- **Overview Stats**: Token counts, average risk scores, and suspicious activity rates
+- **Activity Heatmap**: 7-day visualization of suspicious trading patterns
+- **Trading Volume**: Time-series analysis of XRP trading activity
+- **Top Suspicious Tokens**: Ranked list with risk scores, burst detection, and trade metrics
+- **Interactive Methodology Guide**: Educational content explaining detection algorithms
+
 ## Quick Start
 
 ### Prerequisites
