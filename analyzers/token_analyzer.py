@@ -374,7 +374,11 @@ class TokenAnalyzer:
 
         result = self.client.query("""
             SELECT
-                token_code,
+                CASE
+                  WHEN length(token_code) = 40 THEN
+                    replaceRegexpAll(unhex(token_code), '\0', '')
+                  ELSE upper(token_code)
+                END as token_code,
                 SUBSTRING(token_issuer, 1, 10) || '...' as issuer_short,
                 total_trades,
                 unique_takers,
