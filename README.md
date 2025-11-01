@@ -73,8 +73,14 @@ clickhouse-client < sql/migrations/002_rename_risk_score_column.sql
    ```
 
 3. **Configure Grafana**:
-   - Add ClickHouse data source
-   - Import dashboard panels using queries from `grafana/token_stats_queries.md`
+   - Add ClickHouse data source pointing to your ClickHouse instance
+   - **Option A (Quick)**: Import complete dashboard
+     - Dashboards → Import → Upload JSON file
+     - Select `grafana/xrp-watchdog-dashboard.json`
+     - Choose your ClickHouse datasource
+   - **Option B (Manual)**: Build dashboard from queries
+     - Use queries from `grafana/token_stats_queries.md`
+     - Create panels manually with custom layouts
 
 ### Manual Run
 
@@ -242,7 +248,8 @@ xrp-watchdog/
 ├── collectors/
 │   └── collection_orchestrator.py # Ledger data collector
 ├── grafana/
-│   └── token_stats_queries.md     # Dashboard query reference
+│   ├── xrp-watchdog-dashboard.json # Complete dashboard export (ready to import)
+│   └── token_stats_queries.md      # Dashboard query reference
 ├── logs/
 │   ├── auto_collection.log        # Automated collection log
 │   └── cron.log                   # Cron execution log

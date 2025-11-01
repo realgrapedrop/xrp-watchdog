@@ -2,6 +2,25 @@
 
 Complete query reference for the XRP Watchdog Grafana dashboard, including all panels and visualizations.
 
+## Quick Import
+
+**Already have Grafana and ClickHouse set up?** Import the complete dashboard:
+
+1. In Grafana, go to **Dashboards → Import**
+2. Click **Upload JSON file**
+3. Select `grafana/xrp-watchdog-dashboard.json` from this repository
+4. Choose your **ClickHouse datasource** from the dropdown
+5. Click **Import**
+
+The dashboard includes all panels pre-configured with queries, transforms, and styling.
+
+**Requirements:**
+- Grafana 11.2.0 or newer
+- ClickHouse datasource plugin v4.11.1 or newer
+- ClickHouse database with `xrp_watchdog` schema (see `sql/schema.sql`)
+
+---
+
 ## Overview Panel - Risk Score Statistics
 
 **Query Name:** Risk Score Overview
