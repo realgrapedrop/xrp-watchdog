@@ -102,46 +102,46 @@ python analyzers/token_analyzer.py
                            ▼
 ┌───────────────────────────────────────────────────────────┐
 │              Collection Orchestrator                      │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │  • Fetches 130 ledgers every 5 minutes             │  │
-│  │  • Extracts executed trades (OfferCreate txs)      │  │
-│  │  • Processes payment transactions                  │  │
-│  │  • Inserts into ClickHouse                         │  │
-│  └────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────┐   │
+│  │  • Fetches 130 ledgers every 5 minutes             │   │
+│  │  • Extracts executed trades (OfferCreate txs)      │   │
+│  │  • Processes payment transactions                  │   │
+│  │  • Inserts into ClickHouse                         │   │
+│  └────────────────────────────────────────────────────┘   │
 └──────────────────────────┬────────────────────────────────┘
                            │
                            ▼
 ┌───────────────────────────────────────────────────────────┐
 │                  ClickHouse Database                      │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │  Tables:                                           │  │
-│  │  • executed_trades - Raw trade data               │  │
-│  │  • token_stats - Aggregated risk metrics          │  │
-│  │  • token_whitelist - Legitimate tokens            │  │
-│  └────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────┐   │
+│  │  Tables:                                           │   │
+│  │  • executed_trades - Raw trade data                │   │
+│  │  • token_stats - Aggregated risk metrics           │   │
+│  │  • token_whitelist - Legitimate tokens             │   │
+│  └────────────────────────────────────────────────────┘   │
 └──────────────────────────┬────────────────────────────────┘
                            │
                            ▼
 ┌───────────────────────────────────────────────────────────┐
 │                 Token Analyzer                            │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │  • Calculates risk scores (5 components)           │  │
-│  │  • Detects burst patterns                          │  │
-│  │  • Applies whitelist exclusions                    │  │
-│  │  • Updates token_stats table                       │  │
-│  └────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────┐   │
+│  │  • Calculates risk scores (5 components)           │   │
+│  │  • Detects burst patterns                          │   │
+│  │  • Applies whitelist exclusions                    │   │
+│  │  • Updates token_stats table                       │   │
+│  └────────────────────────────────────────────────────┘   │
 └──────────────────────────┬────────────────────────────────┘
                            │
                            ▼
 ┌───────────────────────────────────────────────────────────┐
 │                 Grafana Dashboard                         │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │  • Risk Score Overview                             │  │
-│  │  • Top Suspicious Tokens                           │  │
-│  │  • Top Suspicious Accounts                         │  │
-│  │  • Whitelisted Tokens                              │  │
-│  │  • Methodology Guide (Educational)                 │  │
-│  └────────────────────────────────────────────────────┘  │
+│  ┌────────────────────────────────────────────────────┐   │
+│  │  • Risk Score Overview                             │   │
+│  │  • Top Suspicious Tokens                           │   │
+│  │  • Top Suspicious Accounts                         │   │
+│  │  • Whitelisted Tokens                              │   │
+│  │  • Methodology Guide (Educational)                 │   │
+│  └────────────────────────────────────────────────────┘   │
 └───────────────────────────────────────────────────────────┘
 ```
 
