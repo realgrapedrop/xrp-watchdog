@@ -1,0 +1,37 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3
+    container_name: xrp-watchdog-clickhouse
+    hostname: clickhouse
+    ports:
+      - "8123:8123"  # HTTP interface
+      - "9000:9000"  # Native protocol
+    volumes:
+      # Data persistence
+      - ../data/clickhouse:/var/lib/clickhouse
+      # Schema initialization
+      - ../sql:/docker-entrypoint-initdb.d:ro
+      # Logs
+      - ../logs:/var/log/clickhouse-server
+    environment:
+      # Allow connections from host
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_DB: xrp_watchdog
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - watchdog-net
+
+networks:
+  watchdog-net:
+    name: xrp-watchdog-network
+    driver: bridge
