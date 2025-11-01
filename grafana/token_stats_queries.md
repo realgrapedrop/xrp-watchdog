@@ -1,4 +1,6 @@
-# Grafana Dashboard Queries for Token Risk Scoring v1.0 vs v2.0
+# Grafana Dashboard Queries for XRP Watchdog
+
+Complete query reference for the XRP Watchdog Grafana dashboard, including all panels and visualizations.
 
 ## Overview Panel - Risk Score Statistics
 
@@ -7,109 +9,72 @@
 
 ```sql
 SELECT
-    COUNT(*) as total_tokens,
-    SUM(IF(risk_score >= 70, 1, 0)) as high_risk_v2,
-    AVG(risk_score) as avg_risk_v2
+    COUNT(*) as "Total Tokens",
+    ROUND(AVG(risk_score), 1) as "Avg Risk Score",
+    SUM(IF(risk_score >= 60, 1, 0)) as "High Risk (≥60)"
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
+  AND total_trades >= 3
 ```
 
-## Top Suspicious Tokens (v2.0)
+## Top Suspicious Tokens
 
 **Query Name:** Top 20 High Risk Tokens
 **Visualization:** Table
 
 ```sql
 SELECT
-    token_code,
-    SUBSTRING(token_issuer, 1, 15) || '...' as issuer,
-    total_trades,
-    unique_takers,
-    ROUND(total_xrp_volume, 0) as volume_xrp,
-    ROUND(risk_score_v1, 1) as score_v1,
-    ROUND(risk_score, 1) as score_v2,
-    ROUND(risk_score - risk_score_v1, 1) as score_diff,
-    ROUND(trade_density, 1) as trades_per_hour,
-    ROUND(burst_score, 0) as burst,
-    last_updated
+    CASE
+      WHEN length(token_code) = 40 THEN
+        upper(replaceRegexpAll(unhex(token_code), '\0', ''))
+      ELSE upper(token_code)
+    END as "Token",
+    SUBSTRING(token_issuer, 1, 20) || '...' as "Issuer",
+    ROUND(risk_score, 1) as "Risk Score",
+    total_trades as "Trades",
+    ROUND(total_xrp_volume, 0) as "Volume (XRP)",
+    ROUND(price_variance_percent, 1) as "Price Var %",
+    ROUND(trade_density, 1) as "Trades/Hour",
+    ROUND(burst_score, 0) as "Burst",
+    formatDateTime(last_updated, '%Y-%m-%d %H:%M') as "Updated"
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 0
+  AND total_trades >= 3
 ORDER BY risk_score DESC
 LIMIT 20
 ```
 
-## Risk Score Comparison Histogram
+**Note:** This query includes hex decoding for token codes. Tokens with 40-character hex codes (like `0000000000000000000000004F504D0000000000`) are decoded to their ASCII representation (e.g., "OPM").
 
-**Query Name:** v1.0 vs v2.0 Score Distribution
-**Visualization:** Bar Chart (Grouped)
+## Top Suspicious Accounts
 
-```sql
-SELECT
-    CASE
-        WHEN risk_score_v1 < 20 THEN '0-20'
-        WHEN risk_score_v1 < 40 THEN '20-40'
-        WHEN risk_score_v1 < 60 THEN '40-60'
-        WHEN risk_score_v1 < 80 THEN '60-80'
-        ELSE '80-100'
-    END as score_range,
-    COUNT(*) as count_v1
-FROM xrp_watchdog.token_stats
-WHERE is_whitelisted = 0
-GROUP BY score_range
-ORDER BY score_range
-
-UNION ALL
-
-SELECT
-    CASE
-        WHEN risk_score < 20 THEN '0-20'
-        WHEN risk_score < 40 THEN '20-40'
-        WHEN risk_score < 60 THEN '40-60'
-        WHEN risk_score < 80 THEN '60-80'
-        ELSE '80-100'
-    END as score_range,
-    COUNT(*) as count_v2
-FROM xrp_watchdog.token_stats
-WHERE is_whitelisted = 0
-GROUP BY score_range
-ORDER BY score_range
-```
-
-## Burst Detection - High Frequency Trading
-
-**Query Name:** High Burst Score Tokens
+**Query Name:** Accounts Trading High Risk Tokens
 **Visualization:** Table
 
 ```sql
 SELECT
-    token_code,
-    SUBSTRING(token_issuer, 1, 15) || '...' as issuer,
-    total_trades,
-    ROUND(trade_density, 1) as trades_per_hour,
-    ROUND(avg_time_gap_seconds, 1) as avg_gap_seconds,
-    ROUND(burst_score, 0) as burst_score,
-    ROUND(risk_score, 1) as risk_v2
-FROM xrp_watchdog.token_stats
-WHERE is_whitelisted = 0
-  AND burst_score >= 50
-ORDER BY burst_score DESC, trade_density DESC
-LIMIT 20
-```
-
-## v1.0 vs v2.0 Score Scatter Plot
-
-**Query Name:** Score Correlation
-**Visualization:** Scatter Plot
-
-```sql
-SELECT
-    risk_score_v1 as x_axis,
-    risk_score as y_axis,
-    token_code as label,
-    total_trades as size
-FROM xrp_watchdog.token_stats
-WHERE is_whitelisted = 0
-  AND total_trades >= 10
+    CASE
+      WHEN length(token_code) = 40 THEN
+        upper(replaceRegexpAll(unhex(token_code), '\0', ''))
+      ELSE upper(token_code)
+    END as "Token",
+    SUBSTRING(taker, 1, 20) || '...' as "Account",
+    COUNT(DISTINCT tx_hash) as "Trades",
+    ROUND(SUM(abs(exec_xrp)), 0) as "Volume (XRP)",
+    MIN(time) as "First Seen",
+    MAX(time) as "Last Seen"
+FROM xrp_watchdog.executed_trades
+WHERE (exec_iou_code, exec_iou_issuer) IN (
+    SELECT token_code, token_issuer
+    FROM xrp_watchdog.token_stats
+    WHERE risk_score >= 60
+      AND is_whitelisted = 0
+    ORDER BY risk_score DESC
+    LIMIT 10
+)
+GROUP BY token_code, taker
+ORDER BY COUNT(DISTINCT tx_hash) DESC
+LIMIT 30
 ```
 
 ## Whitelisted Tokens Panel
@@ -119,130 +84,191 @@ WHERE is_whitelisted = 0
 
 ```sql
 SELECT
-    token_code,
-    token_issuer,
-    whitelist_category,
-    total_trades,
-    ROUND(total_xrp_volume, 0) as volume_xrp,
-    last_updated
+    CASE
+      WHEN length(token_code) = 40 THEN
+        upper(replaceRegexpAll(unhex(token_code), '\0', ''))
+      ELSE upper(token_code)
+    END as "Token",
+    SUBSTRING(token_issuer, 1, 20) || '...' as "Issuer",
+    whitelist_category as "Category",
+    total_trades as "Trades",
+    ROUND(total_xrp_volume, 0) as "Volume (XRP)",
+    formatDateTime(last_updated, '%Y-%m-%d %H:%M') as "Updated"
 FROM xrp_watchdog.token_stats
 WHERE is_whitelisted = 1
 ORDER BY total_xrp_volume DESC
 ```
 
-## Score Improvement/Degradation
+## Methodology Guide / Learning Panel
 
-**Query Name:** Biggest Score Changes
-**Visualization:** Table (shows tokens where v2.0 differs most from v1.0)
+**Query Name:** Educational Content
+**Visualization:** Text (Markdown mode)
+**Panel Type:** Collapsible Row
 
-```sql
--- Tokens with biggest score DECREASE (v2.0 is more lenient)
-SELECT
-    token_code,
-    SUBSTRING(token_issuer, 1, 15) || '...' as issuer,
-    total_trades,
-    unique_takers,
-    ROUND(risk_score_v1, 1) as v1_score,
-    ROUND(risk_score, 1) as v2_score,
-    ROUND(risk_score - risk_score_v1, 1) as score_change,
-    'More Lenient' as v2_effect
-FROM xrp_watchdog.token_stats
-WHERE is_whitelisted = 0
-  AND (risk_score - risk_score_v1) < -10
-ORDER BY (risk_score - risk_score_v1) ASC
-LIMIT 10
+This panel provides educational content about wash trading detection, risk scoring methodology, and investigation techniques.
 
-UNION ALL
+```html
+<table style="width: 100%; border: none;">
+<tr style="vertical-align: top;">
+<td style="width: 33%; padding-right: 15px;">
 
--- Tokens with biggest score INCREASE (v2.0 is stricter)
-SELECT
-    token_code,
-    SUBSTRING(token_issuer, 1, 15) || '...' as issuer,
-    total_trades,
-    unique_takers,
-    ROUND(risk_score_v1, 1) as v1_score,
-    ROUND(risk_score, 1) as v2_score,
-    ROUND(risk_score - risk_score_v1, 1) as score_change,
-    'Stricter' as v2_effect
-FROM xrp_watchdog.token_stats
-WHERE is_whitelisted = 0
-  AND (risk_score - risk_score_v1) > 10
-ORDER BY (risk_score - risk_score_v1) DESC
-LIMIT 10
+## 🎯 What Are We Detecting?
+
+**Token-level manipulation** on XRPL DEX using coordinated accounts to create artificial activity.
+
+**Goal:** Make token appear popular/valuable
+**Result:** Real traders buy inflated token, manipulators dump for profit
+
+---
+
+## 🎭 Manipulation Tactics
+
+**Wash Trading:** Same entity trades with itself to fake volume
+
+**Layering:** Fake orders create demand illusion
+
+**Pump & Dump:** Coordinate buying, sell at peak
+
+**Bot Campaigns:** Automated trading over days/weeks
+
+**Examples from data:**
+- GOAT: 257 trades/hour burst activity
+- CHILLGUY: 1,151 trades, 2 unique accounts
+- OPM: 530 XRP volume, 263 trades/hour
+
+---
+
+## ✅ Table Columns Explained
+
+- **Token** - Which token is being manipulated
+- **Risk Score** - 0-100 manipulation likelihood
+- **Trades/Hour** - Activity density (bots = high)
+- **Burst** - Rapid-fire trading score (0-100)
+- **Price Var %** - Price consistency (low = suspicious)
+
+---
+
+## 📊 Detection Capabilities
+
+**What We Catch & Monitor:**
+- Automated bot campaigns
+- Pump & dump schemes
+- Coordinated wash trading
+- Fake volume generation
+- 100% ledger coverage
+- Updates every 5 minutes
+
+</td>
+<td style="width: 33%; padding: 0 15px;">
+
+## 🏮 Risk Score Algorithm (5 Components)
+
+### 1. Volume (max 50 pts) 📈
+Logarithmic scaling of XRP volume
+
+**Why:** Large volumes can indicate manipulation, but prevents extreme outliers from dominating
+
+### 2. Token Focus (max 30 pts) 🪙
+How many unique accounts trade this token
+
+**Points:** ≤2 accounts=30, ≤5=22, ≤10=15
+
+**Why:** Manipulators use few accounts, real tokens have many traders
+
+### 3. Price Stability (max 20 pts) 💵
+Variance in trade prices
+
+**Why:** Bots trade at precise prices; real markets have natural variance
+
+### 4. Burst Detection (max 15 pts) ⚡
+Trades per hour (temporal clustering)
+
+**Points:** ≥100/hr=15, ≥50/hr=12, ≥20/hr=8
+
+**Why:** Catches pump-and-dump schemes and bot bursts
+
+### 5. Trade Uniformity (max 10 pts) 🤖
+Consistency of trade sizes
+
+**Why:** Bots trade uniform amounts; humans vary
+
+---
+
+## 📈 Score Example
+
+**GOAT Token (Risk: 66)**
+- Volume: 6 XRP → 5 pts
+- Focus: 1 trader → 30 pts
+- Price Var: Low → 16 pts
+- Burst: 257/hr → 15 pts
+- Uniformity: High → 0 pts
+- **Total: 66 points**
+
+</td>
+<td style="width: 33%; padding-left: 15px;">
+
+## 🔍 Investigation Guide
+
+**Click Issuer → XRPScan**
+View token issuer's transaction history, all tokens, counterparties
+
+**Check Token Details:**
+- New token? Low liquidity?
+- Suspicious name or copycat?
+- How many holders?
+
+**Analyze Patterns:**
+- **High Burst (≥75):** Pump & dump attempt
+- **Low Price Var (<1%):** Bot-executed trades
+- **Few Takers (≤5):** Coordinated manipulation
+- **High Trades/Hour (≥50):** Automated campaign
+
+---
+
+## 🎯 Risk Tiers
+
+- **CRITICAL (80-100)** - Very high likelihood
+- **HIGH (70-79)** - Strong manipulation signals
+- **MEDIUM (50-69)** - Moderate suspicious patterns
+- **LOW (<50)** - Normal trading behavior
+
+**Current Average:** 32.6 (healthy market)
+
+---
+
+## 🚨 Red Flags
+
+- ✗ Only 1-2 unique traders
+- ✗ Burst score ≥75
+- ✗ Price variance <1%
+- ✗ Trades/hour ≥100
+- ✗ High volume, few traders
+
+---
+
+## ✅ Whitelist Status
+
+**Legitimate tokens show Risk = 0**
+
+Known legitimate tokens are whitelisted and excluded from risk scoring. Check the "Whitelisted Tokens" panel for established tokens.
+
+**Categories include:**
+- Established DEX tokens
+- Known stablecoins
+- Verified projects
+- Long-standing issuers
+
+</td>
+</tr>
+</table>
 ```
 
-## Real-time Token Stats (Time Series)
-
-**Query Name:** Token Risk Over Time
-**Visualization:** Time Series Graph
-**Note:** Requires storing historical token_stats snapshots
-
-```sql
--- This is a placeholder - requires setting up a history table
--- For now, use current stats with last_updated timestamp
-SELECT
-    last_updated as time,
-    token_code,
-    risk_score as risk_score
-FROM xrp_watchdog.token_stats
-WHERE token_code IN (
-    SELECT token_code FROM xrp_watchdog.token_stats
-    WHERE is_whitelisted = 0
-    ORDER BY risk_score DESC
-    LIMIT 5
-)
-ORDER BY time ASC
-```
-
-## Algorithm Component Breakdown
-
-**Query Name:** Risk Score Components (v2.0)
-**Visualization:** Stacked Bar Chart
-
-```sql
-WITH components AS (
-    SELECT
-        token_code,
-        -- Calculate individual component scores
-        LEAST(50, log10(total_xrp_volume / 1000000.0 + 1) * 12.5) as volume_component,
-        CASE
-            WHEN unique_takers <= 2 THEN 30
-            WHEN unique_takers <= 5 THEN 22
-            WHEN unique_takers <= 10 THEN 15
-            WHEN unique_takers <= 20 THEN 8
-            ELSE 3
-        END as concentration_component,
-        CASE
-            WHEN price_variance_percent < 0.5 THEN 20
-            WHEN price_variance_percent < 1 THEN 16
-            WHEN price_variance_percent < 3 THEN 12
-            WHEN price_variance_percent < 5 THEN 8
-            WHEN price_variance_percent < 10 THEN 4
-            ELSE 1
-        END as price_stability_component,
-        CASE
-            WHEN trade_density >= 100 THEN 15
-            WHEN trade_density >= 50 THEN 12
-            WHEN trade_density >= 20 THEN 8
-            WHEN trade_density >= 10 THEN 5
-            ELSE 2
-        END as burst_component,
-        risk_score
-    FROM xrp_watchdog.token_stats
-    WHERE is_whitelisted = 0
-      AND risk_score >= 50
-    ORDER BY risk_score DESC
-    LIMIT 10
-)
-SELECT
-    token_code,
-    ROUND(volume_component, 1) as volume,
-    ROUND(concentration_component, 1) as concentration,
-    ROUND(price_stability_component, 1) as price_stability,
-    ROUND(burst_component, 1) as burst,
-    ROUND(risk_score, 1) as total
-FROM components
-```
+**Setup Instructions:**
+1. Add a new **Text** panel
+2. Select **Markdown** mode
+3. Paste the HTML/markdown above
+4. Set the panel to be **collapsed by default** using panel options
+5. Title: "Methodology Guide (Click to Learn About Wash Trading)"
 
 ## Usage Instructions
 
@@ -253,26 +279,42 @@ FROM components
 3. **Select ClickHouse as data source**
 4. **Paste the SQL query** into the query editor
 5. **Configure visualization** type as specified
-6. **Set refresh interval** to match your collection frequency (e.g., 5 minutes)
+6. **Set refresh interval** to 5 minutes (matches collection frequency)
 
 ### Recommended Dashboard Layout:
 
 ```
-Row 1: Overview Stats
-- Total Tokens | High Risk Count | Average Risk Score
+Row 1: Overview Stats (Stat Panel)
+- Risk Score Overview (3 stats: Total Tokens, Avg Risk, High Risk Count)
 
 Row 2: Main Tables
-- Top 20 High Risk Tokens (v2.0) | Biggest Score Changes
+- Top Suspicious Tokens (20 rows)
+- Top Suspicious Accounts (30 rows)
 
-Row 3: Burst Detection
-- High Burst Score Tokens | Trade Density Chart
+Row 3: Whitelisted Tokens
+- Whitelisted Tokens Table
 
-Row 4: Comparisons
-- v1.0 vs v2.0 Distribution | Score Correlation Scatter
-
-Row 5: Whitelist & Components
-- Whitelisted Tokens | Risk Score Component Breakdown
+Row 4: Educational Content (Collapsed by default)
+- Methodology Guide Panel (Text/Markdown)
 ```
+
+### Panel Configuration Tips:
+
+**Top Suspicious Tokens:**
+- Enable **column sorting** for interactive exploration
+- Set **"Issuer" column as a link**: `https://xrpscan.com/account/${__value.raw}`
+- Use **conditional formatting** for Risk Score:
+  - Red (≥70), Orange (60-69), Yellow (50-59), Blue (40-49), Green (<40)
+
+**Top Suspicious Accounts:**
+- Set **"Account" column as a link**: `https://xrpscan.com/account/${__value.raw}`
+- Set **"Token" column as a link**: Use token issuer from joined data
+
+**Risk Score Overview:**
+- Use **Big Value** graph mode for stats
+- Set color thresholds:
+  - Avg Risk: Green (<40), Yellow (40-59), Orange (60-69), Red (≥70)
+  - High Risk Count: Green (<5), Yellow (5-9), Orange (10-19), Red (≥20)
 
 ### Variables (Optional):
 
@@ -281,12 +323,24 @@ Add these dashboard variables for interactive filtering:
 ```
 $min_trades: Minimum number of trades (default: 3)
 $min_risk: Minimum risk score to display (default: 0)
-$token_filter: Token code filter (default: %)
 ```
 
 Then use in queries like:
 ```sql
 WHERE total_trades >= $min_trades
   AND risk_score >= $min_risk
-  AND token_code LIKE '$token_filter'
 ```
+
+## Data Freshness
+
+- **Collection Frequency:** Every 5 minutes
+- **Ledger Coverage:** 100% (130 ledgers per collection)
+- **Analysis Latency:** Token stats updated after each collection (~40ms analyzer runtime)
+- **Dashboard Refresh:** Recommended 5-minute auto-refresh
+
+## Notes
+
+- All queries exclude whitelisted tokens unless specifically querying the whitelist
+- Token codes in hex format (40 characters) are automatically decoded to ASCII
+- Risk scores are rounded to 1 decimal place for readability
+- Timestamps use ClickHouse's `formatDateTime()` for consistent formatting
