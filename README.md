@@ -31,29 +31,61 @@ The dashboard provides real-time insights into token manipulation on the XRP Led
 
 ### Prerequisites
 
-- Python 3.8+
-- ClickHouse database
-- Grafana 9.0+
-- XRP Ledger full history node access (via RPC)
+**Required before installation:**
+- **Docker** - For running ClickHouse database ([Install Docker](https://docs.docker.com/get-docker/))
+- **Docker Compose** - Usually included with Docker Desktop
+- **Python 3.8+** - For collector and analyzer scripts
+- **pip3** - Python package manager (`sudo apt install python3-pip` on Debian/Ubuntu)
+- **XRP Ledger full history node** - Access via RPC (Docker container or local rippled)
+
+**Optional (for visualization):**
+- **Grafana 9.0+** - For dashboard visualization
+
+**Note:** The `install.sh` script will check for these prerequisites and guide you through setup.
 
 ### Installation
 
+**Option A: Automated Installation (Recommended)**
+
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/xrp-watchdog.git
+git clone https://github.com/realgrapedrop/xrp-watchdog.git
 cd xrp-watchdog
+
+# Run interactive installer
+./install.sh
+```
+
+The installer will:
+- ✅ Check all prerequisites (Docker, Python, etc.)
+- ✅ Detect your rippled configuration automatically
+- ✅ Start ClickHouse database via Docker Compose
+- ✅ Create Python virtual environment and install dependencies
+- ✅ Initialize database schema
+- ✅ Optionally setup cron job for auto-collection
+- ✅ Optionally run initial data collection
+
+**Option B: Manual Installation**
+
+```bash
+# Clone the repository
+git clone https://github.com/realgrapedrop/xrp-watchdog.git
+cd xrp-watchdog
+
+# Start ClickHouse
+cd compose
+docker compose up -d
+cd ..
 
 # Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install clickhouse-connect
 
 # Initialize database
-clickhouse-client < sql/schema.sql
-clickhouse-client < sql/migrations/001_add_risk_score_v2.sql
-clickhouse-client < sql/migrations/002_rename_risk_score_column.sql
+docker exec -i xrp-watchdog-clickhouse clickhouse-client --multiquery < sql/schema.sql
 ```
 
 ### Configuration
