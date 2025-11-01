@@ -18,7 +18,7 @@ XRP Watchdog is a sophisticated monitoring system that analyzes DEX activity on 
 
 ## Dashboard Screenshot
 
-![XRP Watchdog Dashboard](images/dashboard-screenshot.png)
+![XRP Watchdog Dashboard](images/xrp-watchdog-screenshot.png)
 
 The dashboard provides real-time insights into token manipulation on the XRP Ledger DEX, featuring:
 - **Overview Stats**: Token counts, average risk scores, and suspicious activity rates
