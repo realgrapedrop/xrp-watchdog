@@ -220,21 +220,134 @@ echo ""
 echo "Step 6: Setting up ClickHouse database..."
 echo ""
 
-# Update docker-compose.yml with custom ports
+# Check if ClickHouse is already running
+CLICKHOUSE_RUNNING=false
+
+# Check for ClickHouse container
+if docker ps --format '{{.Names}}' | grep -q clickhouse 2>/dev/null; then
+    EXISTING_CONTAINER=$(docker ps --format '{{.Names}}' | grep clickhouse | head -1)
+    echo "✓ Found existing ClickHouse container: $EXISTING_CONTAINER"
+    CLICKHOUSE_RUNNING=true
+# Check for ClickHouse service/process
+elif command -v clickhouse-client &> /dev/null && clickhouse-client -q "SELECT 1" &> /dev/null; then
+    echo "✓ Found existing ClickHouse installation (running as service)"
+    CLICKHOUSE_RUNNING=true
+fi
+
+if [ "$CLICKHOUSE_RUNNING" = true ]; then
+    read -p "Use existing ClickHouse installation? (yes/no) [yes]: " USE_EXISTING
+    USE_EXISTING=${USE_EXISTING:-yes}
+
+    if [ "$USE_EXISTING" = "yes" ] || [ "$USE_EXISTING" = "y" ]; then
+        echo "✓ Using existing ClickHouse installation"
+        SKIP_CLICKHOUSE_INSTALL=true
+    else
+        echo "Will install new ClickHouse container..."
+        SKIP_CLICKHOUSE_INSTALL=false
+    fi
+else
+    echo "No ClickHouse installation detected."
+    read -p "Install ClickHouse via Docker? (yes/no) [yes]: " INSTALL_CLICKHOUSE
+    INSTALL_CLICKHOUSE=${INSTALL_CLICKHOUSE:-yes}
+
+    if [ "$INSTALL_CLICKHOUSE" != "yes" ] && [ "$INSTALL_CLICKHOUSE" != "y" ]; then
+        echo "✗ ClickHouse is required. Please install it manually."
+        echo "  https://clickhouse.com/docs/en/install"
+        exit 1
+    fi
+    SKIP_CLICKHOUSE_INSTALL=false
+fi
+
+echo ""
+
+# ============================================================================
+# STEP 7: Setup Grafana (Optional)
+# ============================================================================
+echo "Step 7: Setting up Grafana (optional)..."
+echo ""
+
+# Check if Grafana is already running
+GRAFANA_RUNNING=false
+
+# Check for Grafana container
+if docker ps --format '{{.Names}}' | grep -q grafana 2>/dev/null; then
+    EXISTING_GRAFANA=$(docker ps --format '{{.Names}}' | grep grafana | head -1)
+    echo "✓ Found existing Grafana container: $EXISTING_GRAFANA"
+    GRAFANA_RUNNING=true
+# Check for Grafana service
+elif systemctl is-active --quiet grafana-server 2>/dev/null; then
+    echo "✓ Found existing Grafana installation (running as service)"
+    GRAFANA_RUNNING=true
+# Check if Grafana is listening on port 3000
+elif lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null 2>&1; then
+    echo "✓ Found Grafana running on port 3000"
+    GRAFANA_RUNNING=true
+fi
+
+INSTALL_GRAFANA=false
+GRAFANA_PORT=3000
+
+if [ "$GRAFANA_RUNNING" = true ]; then
+    echo "Grafana is already installed and running."
+    read -p "Skip Grafana installation? (yes/no) [yes]: " SKIP_GRAFANA
+    SKIP_GRAFANA=${SKIP_GRAFANA:-yes}
+
+    if [ "$SKIP_GRAFANA" = "yes" ] || [ "$SKIP_GRAFANA" = "y" ]; then
+        echo "⊘ Skipping Grafana installation (using existing)"
+    else
+        INSTALL_GRAFANA=true
+    fi
+else
+    echo "No Grafana installation detected."
+    echo ""
+    echo "Grafana provides a beautiful dashboard for visualizing wash trading data."
+    echo "Recommended: Grafana 11.2+ with ClickHouse datasource plugin"
+    echo ""
+    read -p "Install Grafana via Docker? (yes/no) [yes]: " INSTALL_GRAFANA_CHOICE
+    INSTALL_GRAFANA_CHOICE=${INSTALL_GRAFANA_CHOICE:-yes}
+
+    if [ "$INSTALL_GRAFANA_CHOICE" = "yes" ] || [ "$INSTALL_GRAFANA_CHOICE" = "y" ]; then
+        INSTALL_GRAFANA=true
+
+        # Check if port 3000 is available
+        if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null 2>&1; then
+            echo "⚠️  Port 3000 is already in use"
+            read -p "Enter alternative port for Grafana [3001]: " ALT_PORT
+            GRAFANA_PORT=${ALT_PORT:-3001}
+        fi
+    else
+        echo "⊘ Skipping Grafana installation (you can install it later)"
+    fi
+fi
+
+echo ""
+
+# ============================================================================
+# STEP 8: Create Docker Compose Configuration
+# ============================================================================
+echo "Step 8: Creating Docker Compose configuration..."
+echo ""
+
+# Build docker-compose.yml based on what needs to be installed
 cat > compose/docker-compose.yml << COMPOSEEOF
 version: '3.8'
 
 services:
+COMPOSEEOF
+
+# Add ClickHouse service if needed
+if [ "$SKIP_CLICKHOUSE_INSTALL" = false ]; then
+    cat >> compose/docker-compose.yml << CLICKHOUSEEOF
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: xrp-watchdog-clickhouse
     hostname: clickhouse
     ports:
-      - "${CLICKHOUSE_HTTP_PORT}:8123"
-      - "${CLICKHOUSE_NATIVE_PORT}:9000"
+      - "$CLICKHOUSE_HTTP_PORT:8123"
+      - "$CLICKHOUSE_NATIVE_PORT:9000"
     volumes:
       - ../data/clickhouse:/var/lib/clickhouse
-      - ../logs:/var/log/clickhouse-server
+      - ../logs/clickhouse:/var/log/clickhouse-server
     environment:
       CLICKHOUSE_DB: xrp_watchdog
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
@@ -243,41 +356,91 @@ services:
         soft: 262144
         hard: 262144
     restart: unless-stopped
-COMPOSEEOF
+CLICKHOUSEEOF
+fi
 
-echo "✓ Updated docker-compose.yml"
+# Add Grafana service if needed
+if [ "$INSTALL_GRAFANA" = true ]; then
+    cat >> compose/docker-compose.yml << 'GRAFANAEOF'
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: xrp-watchdog-grafana
+    ports:
+      - "GRAFANAEOF
+    echo "      - \"$GRAFANA_PORT:3000\"" >> compose/docker-compose.yml
+    cat >> compose/docker-compose.yml << 'GRAFANAEOF'
+    volumes:
+      - ../data/grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+GRAFANAEOF
 
-# Start ClickHouse
-cd compose
-docker compose up -d
-cd ..
-echo "✓ Started ClickHouse container"
-
-# Wait for ClickHouse to be ready
-echo "Waiting for ClickHouse to be ready..."
-for i in {1..30}; do
-    if docker exec xrp-watchdog-clickhouse clickhouse-client -q "SELECT 1" > /dev/null 2>&1; then
-        echo "✓ ClickHouse is ready"
-        break
+    # Only add depends_on if ClickHouse is being installed via Docker
+    if [ "$SKIP_CLICKHOUSE_INSTALL" = false ]; then
+        cat >> compose/docker-compose.yml << 'GRAFANAEOF'
+    depends_on:
+      - clickhouse
+GRAFANAEOF
     fi
-    if [ $i -eq 30 ]; then
-        echo "✗ ClickHouse failed to start"
-        exit 1
-    fi
-    sleep 1
-done
 
-# Create database schema
-echo "Creating database schema..."
-docker exec -i xrp-watchdog-clickhouse clickhouse-client --multiquery < sql/schema.sql
-echo "✓ Database schema created"
+    cat >> compose/docker-compose.yml << 'GRAFANAEOF'
+    restart: unless-stopped
+GRAFANAEOF
+fi
+
+echo "✓ Created docker-compose.yml"
+
+# Start services
+if [ "$SKIP_CLICKHOUSE_INSTALL" = false ] || [ "$INSTALL_GRAFANA" = true ]; then
+    echo "Starting Docker services..."
+    cd compose
+    docker compose up -d
+    cd ..
+
+    if [ "$SKIP_CLICKHOUSE_INSTALL" = false ]; then
+        echo "✓ Started ClickHouse container"
+
+        # Wait for ClickHouse to be ready
+        echo "Waiting for ClickHouse to be ready..."
+        for i in {1..30}; do
+            if docker exec xrp-watchdog-clickhouse clickhouse-client -q "SELECT 1" > /dev/null 2>&1; then
+                echo "✓ ClickHouse is ready"
+                break
+            fi
+            if [ $i -eq 30 ]; then
+                echo "✗ ClickHouse failed to start"
+                exit 1
+            fi
+            sleep 1
+        done
+
+        # Create database schema
+        echo "Creating database schema..."
+        docker exec -i xrp-watchdog-clickhouse clickhouse-client --multiquery < sql/schema.sql
+        echo "✓ Database schema created"
+    fi
+
+    if [ "$INSTALL_GRAFANA" = true ]; then
+        echo "✓ Started Grafana container"
+        echo ""
+        echo "Grafana Access:"
+        echo "  URL:      http://localhost:$GRAFANA_PORT"
+        echo "  Username: admin"
+        echo "  Password: admin (change on first login)"
+        echo ""
+        echo "Note: ClickHouse datasource plugin will be installed automatically."
+        echo "      Import dashboard from: grafana/xrp-watchdog-dashboard.json"
+    fi
+fi
 
 echo ""
 
 # ============================================================================
-# STEP 7: Fix Permissions
+# STEP 9: Fix Permissions
 # ============================================================================
-echo "Step 7: Fixing directory permissions..."
+echo "Step 9: Fixing directory permissions..."
 echo ""
 
 # Fix logs directory permissions
@@ -296,9 +459,9 @@ fi
 echo ""
 
 # ============================================================================
-# STEP 8: Setup Auto-Collection (Optional)
+# STEP 10: Setup Auto-Collection (Optional)
 # ============================================================================
-echo "Step 8: Setup automatic data collection..."
+echo "Step 10: Setup automatic data collection..."
 echo ""
 
 read -p "Enable automatic collection every hour? (yes/no) [yes]: " ENABLE_CRON
@@ -321,9 +484,9 @@ fi
 echo ""
 
 # ============================================================================
-# STEP 9: Run Initial Collection
+# STEP 11: Run Initial Collection
 # ============================================================================
-echo "Step 9: Running initial data collection..."
+echo "Step 11: Running initial data collection..."
 echo ""
 
 read -p "Collect initial sample data (50 ledgers)? (yes/no) [yes]: " RUN_INITIAL
@@ -350,29 +513,42 @@ echo "Configuration:"
 echo "  Rippled container: $RIPPLED_CONTAINER"
 echo "  ClickHouse HTTP:   localhost:$CLICKHOUSE_HTTP_PORT"
 echo "  ClickHouse Native: localhost:$CLICKHOUSE_NATIVE_PORT"
+if [ "$INSTALL_GRAFANA" = true ]; then
+    echo "  Grafana URL:       http://localhost:$GRAFANA_PORT"
+fi
 echo "  Install directory: $INSTALL_DIR"
 echo ""
+
+if [ "$INSTALL_GRAFANA" = true ]; then
+    echo "Grafana Dashboard:"
+    echo "  1. Open http://localhost:$GRAFANA_PORT"
+    echo "  2. Login with admin/admin (change password on first login)"
+    echo "  3. Go to Dashboards → Import"
+    echo "  4. Upload: grafana/xrp-watchdog-dashboard.json"
+    echo "  5. Select ClickHouse datasource and import"
+    echo ""
+fi
+
 echo "Quick Start:"
 echo "  1. Collect data manually:"
 echo "     cd $INSTALL_DIR"
 echo "     source venv/bin/activate"
-echo "     python collectors/collection_orchestrator.py 13"
+echo "     python collectors/collection_orchestrator.py 130 --analyze"
 echo ""
-echo "  2. View collected data:"
-echo "     docker exec xrp-watchdog-clickhouse clickhouse-client -q \\"
-echo "       \"SELECT COUNT(*) FROM xrp_watchdog.executed_trades\""
+echo "  2. View token risk scores:"
+echo "     python analyzers/token_analyzer.py"
 echo ""
-echo "  3. Run detection queries:"
-echo "     cat queries/04_market_impact_leaderboard.sql | \\"
-echo "       docker exec -i xrp-watchdog-clickhouse clickhouse-client --multiquery"
+echo "  3. Check storage usage:"
+echo "     python scripts/check_storage.py"
 echo ""
 echo "  4. View auto-collection logs (if enabled):"
 echo "     tail -f logs/auto_collection.log"
 echo ""
 echo "Documentation:"
-echo "  - README.md (coming soon)"
-echo "  - queries/ directory for detection queries"
-echo "  - config.env for configuration"
+echo "  - README.md - Complete project documentation"
+echo "  - CLAUDE.md - Developer documentation"
+echo "  - docs/STORAGE_MANAGEMENT.md - Storage and retention guide"
+echo "  - grafana/token_stats_queries.md - Dashboard query reference"
 echo ""
 echo "To uninstall:"
 echo "  ./uninstall.sh"
