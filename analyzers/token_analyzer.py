@@ -197,8 +197,7 @@ class TokenAnalyzer:
             dateDiff('second', MIN(time), MAX(time)) as seconds_active,
             dateDiff('day', MIN(time), MAX(time)) as days_active,
             AVG(abs(exec_xrp)) as avg_trade_xrp,
-            stddevPop(abs(exec_xrp)) as trade_size_stddev,
-            groupArray(time) as trade_times
+            stddevPop(abs(exec_xrp)) as trade_size_stddev
           FROM executed_trades
           WHERE exec_iou_code != ''
             AND exec_xrp != 0
@@ -233,16 +232,11 @@ class TokenAnalyzer:
           ROUND(tb.total_trades / nullIf(tb.unique_takers, 0), 2) as trades_per_account,
           ROUND(tb.total_xrp_volume / nullIf(tb.unique_takers, 0), 2) as xrp_volume_per_account,
 
-          -- Calculate time-based metrics
+          -- Calculate time-based metrics (optimized - no array loading)
+          -- Average time gap = total active seconds / (number of trades - 1)
           CASE
-            WHEN length(tb.trade_times) > 1
-            THEN arrayReduce('avg',
-              arrayMap(i -> dateDiff('second',
-                arrayElement(tb.trade_times, i),
-                arrayElement(tb.trade_times, if(i + 1 <= length(tb.trade_times), i + 1, i))
-              ),
-              range(1, length(tb.trade_times)))
-            )
+            WHEN tb.total_trades > 1 AND tb.seconds_active > 0
+            THEN tb.seconds_active / (tb.total_trades - 1)
             ELSE 0
           END as avg_time_gap_seconds,
 
