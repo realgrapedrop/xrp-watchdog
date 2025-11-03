@@ -524,7 +524,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Hourly pattern of manipulation activity - darker = more suspicious trades Last $__range",
+      "description": "📊 Shows suspicious trades per hour. Higher bars = more manipulation activity.\n\n🔴 Red (600-1000): High suspicious activity\n🟠 Orange (400-600): Moderate activity  \n🟢 Green (0-400): Low activity\n\nSuspicious = trades >100 XRP OR tokens with ≤3 unique traders (manipulation pattern)",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -621,7 +621,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Hourly trade volume and token activity",
+      "description": "📈 Total market activity over time (all trades, not just suspicious).\n\n🟡 Yellow line: Total XRP volume traded\n📊 Baseline: Normal daily activity ~50K-100K trades\n⚠️ Spikes: Major manipulation events (e.g., 300K+ = coordinated pump)\n\nCompare with heatmap above to identify which hours had suspicious vs legitimate volume.",
       "fieldConfig": {
         "defaults": {
           "color": {
