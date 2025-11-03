@@ -124,6 +124,69 @@ class TokenAnalyzer:
         else:
             return 5.0
 
+    def detect_bridge_pattern(self, stats: dict) -> tuple[str, float]:
+        """
+        Detect if token exhibits bridge/legitimate protocol patterns
+
+        Returns: (classification, confidence_score)
+
+        Classifications:
+        - 'bridge': Cross-chain bridge protocol (Axelar, Wanchain, etc.)
+        - 'manipulation': Likely wash trading / market manipulation
+        - 'legitimate': Normal trading activity
+        - 'unknown': Insufficient data or unclear pattern
+
+        Confidence: 0.0-1.0 (how confident we are in the classification)
+        """
+
+        # Bridge detection criteria
+        bridge_signals = 0
+        bridge_confidence = 0.0
+
+        # Signal 1: Very few unique traders (1-3) + high volume = automated bridge
+        if stats['unique_takers'] <= 3 and stats['total_xrp_volume'] > 10000:
+            bridge_signals += 3
+            bridge_confidence += 0.4
+
+        # Signal 2: Extremely low price variance (<1%) = algorithmic pricing
+        if stats['price_variance_percent'] < 1.0 and stats['total_trades'] > 10:
+            bridge_signals += 2
+            bridge_confidence += 0.25
+
+        # Signal 3: Very uniform trade sizes (<5% variance) = automated
+        if stats['size_variance_percent'] < 5.0 and stats['total_trades'] > 10:
+            bridge_signals += 2
+            bridge_confidence += 0.25
+
+        # Signal 4: High volume but few traders = centralized operation
+        if stats['unique_takers'] <= 5 and stats['total_xrp_volume'] > 50000:
+            bridge_signals += 2
+            bridge_confidence += 0.1
+
+        # Signal 5: Token name patterns (check for common bridge prefixes)
+        token_name = stats['token_code'].upper()
+        bridge_keywords = ['AXL', 'BRIDGE', 'WRAPPED', 'W', 'X', 'ANY', 'MULTI']
+        if any(keyword in token_name for keyword in bridge_keywords):
+            bridge_signals += 1
+            bridge_confidence += 0.15
+
+        # Decision tree
+        if bridge_signals >= 5:
+            # Strong bridge pattern
+            return ('bridge', min(1.0, bridge_confidence))
+        elif bridge_signals >= 3 and stats['total_xrp_volume'] > 20000:
+            # Likely bridge (high volume + some signals)
+            return ('bridge', min(0.8, bridge_confidence))
+        elif stats['unique_takers'] > 20 and stats['total_trades'] > 100:
+            # Legitimate organic activity
+            return ('legitimate', 0.6)
+        elif stats['unique_takers'] <= 5 and stats['total_xrp_volume'] > 1000:
+            # Suspicious but not clearly a bridge - likely manipulation
+            return ('manipulation', 0.7)
+        else:
+            # Unclear pattern
+            return ('unknown', 0.3)
+
     def refresh_token_stats(self):
         """Refresh token_stats table with latest data"""
         self.start_time = time.time()
@@ -257,9 +320,17 @@ class TokenAnalyzer:
             # Handle empty whitelist category
             whitelist_cat = stats['whitelist_category'] if stats['whitelist_category'] else 'none'
 
+            # Detect bridge patterns BEFORE calculating risk score
+            classification, confidence = self.detect_bridge_pattern(stats)
+
             # Calculate risk scores
             risk_score = self.calculate_risk_score(stats, is_whitelisted)
             burst = self.calculate_burst_score(stats['trade_density'], is_whitelisted)
+
+            # Reduce risk score for detected bridges (they're not manipulation)
+            if classification == 'bridge' and confidence >= 0.6:
+                risk_score = risk_score * 0.3  # Reduce to 30% of original
+                burst = burst * 0.3
 
             # Prepare row for insertion
             token_stats_data.append((
@@ -288,6 +359,8 @@ class TokenAnalyzer:
                 stats['xrp_volume_per_account'],
                 risk_score,
                 burst,
+                classification,
+                round(confidence, 3),
                 datetime.now()
             ))
 
@@ -307,7 +380,7 @@ class TokenAnalyzer:
                 "is_whitelisted", "whitelist_category", "avg_time_gap_seconds",
                 "trade_density", "price_variance_percent", "size_variance_percent",
                 "trades_per_account", "xrp_volume_per_account", "risk_score",
-                "burst_score", "last_updated"
+                "burst_score", "classification", "classification_confidence", "last_updated"
             ]
         )
         print(f"  ✓ Inserted {len(token_stats_data)} token statistics\n")
