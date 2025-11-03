@@ -54,3 +54,6 @@ Thumbs.db
 /tmp/
 *.tmp
 *.temp
+
+# Grafana API credentials
+scripts/grafana/config.sh
