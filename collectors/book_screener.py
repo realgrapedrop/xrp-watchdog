@@ -8,7 +8,7 @@ Flags suspicious ledgers for detailed analysis
 import subprocess
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 import clickhouse_connect
 
@@ -190,10 +190,10 @@ class BookScreener:
             # Format: "2025-Oct-19 08:59:20.000000000 UTC"
             close_time_str = ledger_data["close_time"]
             try:
-                dt = datetime.strptime(close_time_str.split('.')[0], "%Y-%b-%d %H:%M:%S")
+                dt = datetime.strptime(close_time_str.split('.')[0], "%Y-%b-%d %H:%M:%S").replace(tzinfo=timezone.utc)
                 time_value = dt
             except:
-                time_value = datetime.now()
+                time_value = datetime.now(timezone.utc)
             
             row = (
                 time_value,                          # time

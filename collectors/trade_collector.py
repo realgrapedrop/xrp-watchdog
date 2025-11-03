@@ -10,7 +10,7 @@ import sys
 import csv
 import json
 from io import StringIO
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 import clickhouse_connect
 
@@ -235,9 +235,9 @@ class TradeCollector:
         for trade in trades:
             close_time_str = trade['close_time']
             try:
-                dt = datetime.strptime(close_time_str.split('.')[0], "%Y-%b-%d %H:%M:%S")
+                dt = datetime.strptime(close_time_str.split('.')[0], "%Y-%b-%d %H:%M:%S").replace(tzinfo=timezone.utc)
             except:
-                dt = datetime.now()
+                dt = datetime.now(timezone.utc)
             
             tx_type_map = {'OfferCreate': 1, 'Payment': 2}
             tx_type_val = tx_type_map.get(trade['tx_type'], 1)
