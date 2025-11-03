@@ -123,7 +123,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Unique IOU tokens tracked",
+      "description": "📊 Total unique tokens being monitored.<br><br>Counts all tokens that have executed trades in the database.<br><br>Includes both suspicious and\n  legitimate tokens.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -200,7 +200,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Tokens with activity in last hour",
+      "description": "⚡ Tokens with trading activity in the last hour.<br><br>Shows how many tokens are currently being traded.<br><br>Real-time market activity indicator.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -277,7 +277,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Percentage of suspicious patterns detected",
+      "description": " 🚨 Percentage of ledgers flagged as suspicious.<br><br>🟢 <15% = Normal<br>🟡 15-20% = Elevated<br>🟠 20-25% = High<br>🔴 >25% = Very High<br><br>Based\n  on book_changes screening algorithm.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -370,7 +370,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Executed trades analyzed",
+      "description": "📈 Total number of executed trades in database.<br><br>All DEX transactions captured since monitoring began.<br><br>Updated every 5 minutes with new data\n   collection.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -447,7 +447,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "The Risk Score Overview",
+      "description": "🎯 Key risk metrics across all monitored tokens.<br><br>📊 Total Tokens: Count of non-whitelisted tokens<br>📉 Avg Risk Score: Mean manipulation risk\n  (0-100)<br>🔴 High Risk: Tokens scoring ≥60 (strong signals)<br><br>Lower average = healthier market conditions.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -524,7 +524,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "📊 Shows suspicious trades per hour. Higher bars = more manipulation.<br><br>🔴 Red (600-1000) = high activity<br>🟠 Orange (400-600) = moderate<br>🟢 Green (0-400) = low<br><br>Suspicious = trades >100 XRP or tokens with ≤3 traders.",
+      "description": "Suspicious Activity Heatmap:\n  📊 Shows suspicious trades per hour. Higher bars = more manipulation.<br><br>🔴 Red (600-1000) = high activity<br>🟠 Orange (400-600) = moderate<br>🟢\n  Green (0-400) = low<br><br>Suspicious = trades >100 XRP or tokens with ≤3 traders.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -621,7 +621,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "📈 Total market activity over time (all trades, not just suspicious).<br><br>🟡 Yellow line: Total XRP volume traded<br>📊 Baseline: Normal daily activity ~50K-100K trades<br>⚠️ Spikes: Major manipulation events (e.g., 300K+ = coordinated pump)<br><br>Compare with heatmap above to identify which hours had suspicious vs legitimate volume.",
+      "description": "Trading Activity Over Time:\n  📈 Total market activity over time (all trades, not just suspicious).<br><br>🟡 Yellow line: Total XRP volume traded<br>📊 Baseline: Normal daily\n  activity ~50K-100K trades<br>⚠️ Spikes: Major manipulation events (e.g., 300K+ = coordinated pump)<br><br>Compare with heatmap above to identify which\n  hours had suspicious vs legitimate volume.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -784,7 +784,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "${DS_XRP_WATCHDOG-CLICKHOUSE}"
       },
-      "description": "Wallet addresses with highest manipulation risk scores",
+      "description": "🔍 Tokens ranked by manipulation risk score (0-100).<br><br>Click Issuer links to investigate on XRPScan.<br><br>🔴 Red scores (≥70) = Strong\n  manipulation signals<br>🟡 Yellow scores (50-69) = Moderate suspicious patterns<br><br>Automatically filters out bridges and whitelisted tokens.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1076,8 +1076,8 @@
       {
         "current": {
           "selected": false,
-          "text": "6h",
-          "value": "6h"
+          "text": "7d",
+          "value": "7d"
         },
         "hide": 2,
         "includeAll": false,
@@ -1096,7 +1096,7 @@
             "value": "1h"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "6h",
             "value": "6h"
           },
@@ -1106,7 +1106,7 @@
             "value": "24h"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "7d",
             "value": "7d"
           },
@@ -1128,7 +1128,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {
@@ -1148,8 +1148,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "XRP Watchdog v2",
+  "title": "XRP Watchdog",
   "uid": "xrp-watchdog",
-  "version": 3,
+  "version": 7,
   "weekStart": ""
 }
