@@ -864,21 +864,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Last Trade"
-            },
-            "properties": [
-              {
-                "id": "custom.width"
-              },
-              {
-                "id": "custom.align",
-                "value": "right"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "Price Var %"
             },
             "properties": [
@@ -923,7 +908,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 155
+                "value": 200
               }
             ]
           }
