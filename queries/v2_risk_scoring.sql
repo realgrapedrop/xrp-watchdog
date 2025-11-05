@@ -95,27 +95,10 @@ SELECT
     100
   ), 1) as "Risk Score",
 
-  -- === IMPACT FACTOR (0-1.0) === Market relevance (7d volume)
-  -- Smooth logarithmic curve: suppresses micro-volumes, preserves large
-  -- 0.1 XRP -> 0.04, 10 XRP -> 0.30, 100 XRP -> 0.66, 1000 XRP -> 0.90
-  ROUND(LEAST(1.0, log10(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h) / 10 + 1)), 2) as "Impact Factor",
-
-  -- === FINAL PRIORITY === Risk × Impact (what matters)
-  ROUND(
-    LEAST(
-      LEAST(60, log10(s24.total_xrp_volume_24h / 100000 + 1) * 15) +
-      CASE WHEN s24.unique_takers <= 2 THEN 30 WHEN s24.unique_takers <= 5 THEN 22 WHEN s24.unique_takers <= 10 THEN 15 WHEN s24.unique_takers <= 20 THEN 8 ELSE 3 END +
-      CASE WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 0.5 THEN 20 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 1 THEN 16 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 3 THEN 12 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 5 THEN 8 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END +
-      CASE WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 100 THEN 15 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 50 THEN 12 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 20 THEN 8 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 5 ELSE 2 END +
-      CASE WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 2 THEN 10 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 5 THEN 7 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END,
-      100
-    ) * LEAST(1.0, log10(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h) / 10 + 1))
-  , 1) as "Final Priority",
-
   -- Supporting metrics
   s24.total_trades as "Trades",
-  ROUND(s24.total_xrp_volume_24h, 0) as "Volume (24h)",
-  ROUND(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h), 0) as "Volume (7d)",
+  ROUND(s24.total_xrp_volume_24h, 0) as "XRP Volume (24h)",
+  ROUND(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h), 0) as "XRP Volume (7d)",
   ROUND((s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100, 1) as "Price Var %",
   ROUND(s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01), 1) as "Trades/Hour",
   ROUND(CASE
@@ -125,7 +108,7 @@ SELECT
     WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 33
     ELSE 13
   END, 0) as "Burst",
-  formatDateTime(s24.last_trade, '%Y-%m-%d %H:%M') as "Updated"
+  ROUND((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 60, 0) as "Duration (min)"
 
 FROM stats_24h s24
 LEFT JOIN stats_7d s7
@@ -155,5 +138,5 @@ AND NOT (
 -- Research view: Remove this filter to see all patterns
 AND s24.total_xrp_volume_24h >= 10  -- v2.0: Minimum impact threshold
 
-ORDER BY "Final Priority" DESC, "Risk Score" DESC
+ORDER BY "Risk Score" DESC
 LIMIT 20;
