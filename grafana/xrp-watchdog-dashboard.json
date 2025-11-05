@@ -42,7 +42,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div style=\"display:flex;align-items:center;margin-top:10px;font-size:1.3rem;line-height:1.8;\">\n      <div style=\"font-weight:bold;margin-right:12px;font-size:1.4rem;\">📊 Adjust analysis time range:</div>\n      <div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:8px;\">\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=5m&from=now-5m&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">5m</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=1h&from=now-1h&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">1h</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=6h&from=now-6h&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">6h</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=24h&from=now-24h&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">24h</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=2d&from=now-2d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">2d</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=7d&from=now-7d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">7d</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=14d&from=now-14d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">14d</a> ▪\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=30d&from=now-30d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">30d</a>\n      </div>\n    </div>",
+        "content": "<div style=\"display:flex;align-items:center;margin-top:10px;font-size:1.3rem;line-height:1.8;\">\n      <div style=\"font-weight:bold;margin-right:12px;font-size:1.4rem;\">\ud83d\udcca Adjust analysis time range:</div>\n      <div style=\"display:flex;align-items:center;flex-wrap:wrap;gap:8px;\">\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=5m&from=now-5m&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">5m</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=1h&from=now-1h&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">1h</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=6h&from=now-6h&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">6h</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=24h&from=now-24h&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">24h</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=2d&from=now-2d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">2d</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=7d&from=now-7d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">7d</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=14d&from=now-14d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">14d</a> \u25aa\n        <a href=\"/d/xrp-watchdog/xrp-watchdog?var-window=30d&from=now-30d&to=now\"\n           style=\"color:#4da3ff;text-decoration:none;margin:0 6px;font-size:1.3rem;font-weight:500;\">30d</a>\n      </div>\n    </div>",
         "mode": "html"
       },
       "pluginVersion": "11.2.0",
@@ -54,7 +54,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "📊 Total unique tokens being monitored.<br><br>Counts all tokens that have executed trades in the database.<br><br>Includes both suspicious and\n  legitimate tokens.",
+      "description": "\ud83d\udcca Total unique tokens being monitored.<br><br>Counts all tokens that have executed trades in the database.<br><br>Includes both suspicious and\n  legitimate tokens.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -131,7 +131,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "⚡ Tokens with trading activity in the last hour.<br><br>Shows how many tokens are currently being traded.<br><br>Real-time market activity indicator.",
+      "description": "\u26a1 Tokens with trading activity in the last hour.<br><br>Shows how many tokens are currently being traded.<br><br>Real-time market activity indicator.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -208,7 +208,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": " 🚨 Percentage of ledgers flagged as suspicious.<br><br>🟢 <15% = Normal<br>🟡 15-20% = Elevated<br>🟠 20-25% = High<br>🔴 >25% = Very High<br><br>Based\n  on book_changes screening algorithm.",
+      "description": " \ud83d\udea8 Percentage of ledgers flagged as suspicious.<br><br>\ud83d\udfe2 <15% = Normal<br>\ud83d\udfe1 15-20% = Elevated<br>\ud83d\udfe0 20-25% = High<br>\ud83d\udd34 >25% = Very High<br><br>Based\n  on book_changes screening algorithm.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -301,7 +301,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "📈 Total number of executed trades in database.<br><br>All DEX transactions captured since monitoring began (Oct 19, 2025).<br><br>Updated every 5 minutes with new data collection.",
+      "description": "\ud83d\udcc8 Total number of executed trades in database.<br><br>All DEX transactions captured since monitoring began (Oct 19, 2025).<br><br>Updated every 5 minutes with new data collection.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -379,7 +379,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "🎯 Key risk metrics across all monitored tokens.<br><br>📊 Total Tokens: Count of non-whitelisted tokens<br>📉 Avg Risk Score: Mean manipulation risk\n  (0-100)<br>🔴 High Risk: Tokens scoring ≥60 (strong signals)<br><br>Lower average = healthier market conditions.",
+      "description": "\ud83c\udfaf Key risk metrics across all monitored tokens.<br><br>\ud83d\udcca Total Tokens: Count of non-whitelisted tokens<br>\ud83d\udcc9 Avg Risk Score: Mean manipulation risk\n  (0-100)<br>\ud83d\udd34 High Risk: Tokens scoring \u226560 (strong signals)<br><br>Lower average = healthier market conditions.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -445,7 +445,7 @@
           },
           "pluginVersion": "4.11.1",
           "queryType": "table",
-          "rawSql": "SELECT\n      COUNT(*) as \"Total Tokens\",\n      ROUND(AVG(risk_score), 1) as \"Avg Risk Score\",  -- ← Changed\n      SUM(IF(risk_score >= 60, 1, 0)) as \"High Risk (≥60)\"  -- ← Changed\n  FROM xrp_watchdog.token_stats\n  WHERE is_whitelisted = 0\n    AND total_trades >= 3",
+          "rawSql": "SELECT\n      COUNT(*) as \"Total Tokens\",\n      ROUND(AVG(risk_score), 1) as \"Avg Risk Score\",  -- \u2190 Changed\n      SUM(IF(risk_score >= 60, 1, 0)) as \"High Risk (\u226560)\"  -- \u2190 Changed\n  FROM xrp_watchdog.token_stats\n  WHERE is_whitelisted = 0\n    AND total_trades >= 3",
           "refId": "A"
         }
       ],
@@ -456,7 +456,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "Suspicious Activity Heatmap:\n  📊 Shows suspicious trades per hour. Higher bars = more manipulation.<br><br>🔴 Red (600-1000) = high activity<br>🟠 Orange (400-600) = moderate<br>🟢\n  Green (0-400) = low<br><br>Suspicious = trades >100 XRP or tokens with ≤3 traders.",
+      "description": "Suspicious Activity Heatmap:\n  \ud83d\udcca Shows suspicious trades per hour. Higher bars = more manipulation.<br><br>\ud83d\udd34 Red (600-1000) = high activity<br>\ud83d\udfe0 Orange (400-600) = moderate<br>\ud83d\udfe2\n  Green (0-400) = low<br><br>Suspicious = trades >100 XRP or tokens with \u22643 traders.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -501,7 +501,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1E-9
+          "le": 1e-09
         },
         "legend": {
           "show": true
@@ -553,7 +553,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "Trading Activity Over Time:\n  📈 Total market activity over time (all trades, not just suspicious).<br><br>🟡 Yellow line: Total XRP volume traded<br>📊 Baseline: Normal daily\n  activity ~50K-100K trades<br>⚠️ Spikes: Major manipulation events (e.g., 300K+ = coordinated pump)<br><br>Compare with heatmap above to identify which\n  hours had suspicious vs legitimate volume.",
+      "description": "Trading Activity Over Time:\n  \ud83d\udcc8 Total market activity over time (all trades, not just suspicious).<br><br>\ud83d\udfe1 Yellow line: Total XRP volume traded<br>\ud83d\udcca Baseline: Normal daily\n  activity ~50K-100K trades<br>\u26a0\ufe0f Spikes: Major manipulation events (e.g., 300K+ = coordinated pump)<br><br>Compare with heatmap above to identify which\n  hours had suspicious vs legitimate volume.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -689,7 +689,7 @@
               "showLineNumbers": false,
               "showMiniMap": false
             },
-            "content": "<table style=\"width: 100%; border: none;\">\n  <tr style=\"vertical-align: top;\">\n  <td style=\"width: 33%; padding-right: 15px;\">\n\n  ## 🎯 What Are We Detecting?\n\n  **Token-level manipulation** on XRPL DEX using coordinated accounts to create artificial activity.\n\n  **Goal:** Make token appear popular/valuable\n  **Result:** Real traders buy inflated token, manipulators dump for profit\n\n  ---\n\n  ## 🎭 Manipulation Tactics\n\n  **Wash Trading:** Same entity trades with itself to fake volume\n\n  **Layering:** Fake orders create demand illusion\n\n  **Pump & Dump:** Coordinate buying, sell at peak\n\n  **Bot Campaigns:** Automated trading over days/weeks\n\n  **Examples from data:**\n  - GOAT: 257 trades/hour burst activity\n  - CHILLGUY: 1,151 trades, 2 unique accounts\n  - OPM: 530 XRP volume, 263 trades/hour\n\n ---\n\n  ## 📊 Detection Capabilities\n\n  **What We Catch & Monitor:**\n  - Automated bot campaigns\n  - Pump & dump schemes\n  - Coordinated wash trading\n  - Fake volume generation\n  - 100% ledger coverage\n  - Updates every 5 minutes\n  \n  ---\n\n  ## ✅ Table Columns Explained\n\n  - **Token** - Which token is being manipulated\n  - **Risk Score** - 0-100 manipulation likelihood\n  - **Trades/Hour** - Activity density (bots = high)\n  - **Burst** - Rapid-fire trading score (0-100)\n  - **Price Var %** - Price consistency (low = suspicious)\n\n  </td>\n  <td style=\"width: 33%; padding: 0 15px;\">\n\n  ## 🏮 Risk Score Algorithm (5 Components)\n\n  ### 1. Volume (max 50 pts) 📈\n  Logarithmic scaling of XRP volume\n\n  **Why:** Large volumes can indicate manipulation, but prevents extreme outliers from dominating\n\n  ### 2. Token Focus (max 30 pts) 🪙\n  How many unique accounts trade this token\n\n  **Points:** ≤2 accounts=30, ≤5=22, ≤10=15\n\n  **Why:** Manipulators use few accounts, real tokens have many traders\n\n  ### 3. Price Stability (max 20 pts) 💵\n  Variance in trade prices\n\n  **Why:** Bots trade at precise prices; real markets have natural variance\n\n  ### 4. Burst Detection (max 15 pts) ⚡\n  Trades per hour (temporal clustering)\n\n  **Points:** ≥100/hr=15, ≥50/hr=12, ≥20/hr=8\n\n  **Why:** Catches pump-and-dump schemes and bot bursts\n\n  ### 5. Trade Uniformity (max 10 pts) 🤖\n  Consistency of trade sizes\n\n  **Why:** Bots trade uniform amounts; humans vary\n\n  ---\n\n  ## 📈 Score Example\n\n  **GOAT Token (Risk: 66)**\n  - Volume: 6 XRP → 5 pts\n  - Focus: 1 trader → 30 pts\n  - Price Var: Low → 16 pts\n  - Burst: 257/hr → 15 pts\n  - Uniformity: High → 0 pts\n  - **Total: 66 points**\n\n  </td>\n  <td style=\"width: 33%; padding-left: 15px;\">\n\n  ## 🔍 Investigation Guide\n\n  **Click Issuer → XRPScan**\n  View token issuer's transaction history, all tokens, counterparties\n\n  **Check Token Details:**\n  - New token? Low liquidity?\n  - Suspicious name or copycat?\n  - How many holders?\n\n  **Analyze Patterns:**\n  - **High Burst (≥75):** Pump & dump attempt\n  - **Low Price Var (<1%):** Bot-executed trades\n  - **Few Takers (≤5):** Coordinated manipulation\n  - **High Trades/Hour (≥50):** Automated campaign\n\n  ---\n\n  ## 🎯 Risk Tiers\n\n  - **CRITICAL (80-100)** - Very high likelihood\n  - **HIGH (70-79)** - Strong manipulation signals\n  - **MEDIUM (50-69)** - Moderate suspicious patterns\n  - **LOW (<50)** - Normal trading behavior\n\n  **Current Average:** 32.6 (healthy market)\n\n  ---\n\n  ## 🚨 Red Flags\n\n  - ✗ Only 1-2 unique traders\n  - ✗ Burst score ≥75\n  - ✗ Price variance <1%\n  - ✗ Trades/hour ≥100\n  - ✗ High volume, few traders\n\n  ---\n\n  ## ✅ Whitelist Status\n\n  Known legitimate tokens are whitelisted and excluded from risk scoring.\n  - Established DEX tokens\n  - Known stablecoins\n  - Verified projects\n  - Long-standing issuers\n\n  </td>\n  </tr>\n  </table>",
+            "content": "<table style=\"width: 100%; border: none;\">\n  <tr style=\"vertical-align: top;\">\n  <td style=\"width: 33%; padding-right: 15px;\">\n\n  ## \ud83c\udfaf What Are We Detecting?\n\n  **Token-level manipulation** on XRPL DEX using coordinated accounts to create artificial activity.\n\n  **Goal:** Make token appear popular/valuable\n  **Result:** Real traders buy inflated token, manipulators dump for profit\n\n  ---\n\n  ## \ud83c\udfad Manipulation Tactics\n\n  **Wash Trading:** Same entity trades with itself to fake volume\n\n  **Layering:** Fake orders create demand illusion\n\n  **Pump & Dump:** Coordinate buying, sell at peak\n\n  **Bot Campaigns:** Automated trading over days/weeks\n\n  **Examples from data:**\n  - GOAT: 257 trades/hour burst activity\n  - CHILLGUY: 1,151 trades, 2 unique accounts\n  - OPM: 530 XRP volume, 263 trades/hour\n\n ---\n\n  ## \ud83d\udcca Detection Capabilities\n\n  **What We Catch & Monitor:**\n  - Automated bot campaigns\n  - Pump & dump schemes\n  - Coordinated wash trading\n  - Fake volume generation\n  - 100% ledger coverage\n  - Updates every 5 minutes\n  \n  ---\n\n  ## \u2705 Table Columns Explained\n\n  - **Token** - Which token is being manipulated\n  - **Risk Score** - 0-100 manipulation likelihood\n  - **Trades/Hour** - Activity density (bots = high)\n  - **Burst** - Rapid-fire trading score (0-100)\n  - **Price Var %** - Price consistency (low = suspicious)\n\n  </td>\n  <td style=\"width: 33%; padding: 0 15px;\">\n\n  ## \ud83c\udfee Risk Score Algorithm (5 Components)\n\n  ### 1. Volume (max 50 pts) \ud83d\udcc8\n  Logarithmic scaling of XRP volume\n\n  **Why:** Large volumes can indicate manipulation, but prevents extreme outliers from dominating\n\n  ### 2. Token Focus (max 30 pts) \ud83e\ude99\n  How many unique accounts trade this token\n\n  **Points:** \u22642 accounts=30, \u22645=22, \u226410=15\n\n  **Why:** Manipulators use few accounts, real tokens have many traders\n\n  ### 3. Price Stability (max 20 pts) \ud83d\udcb5\n  Variance in trade prices\n\n  **Why:** Bots trade at precise prices; real markets have natural variance\n\n  ### 4. Burst Detection (max 15 pts) \u26a1\n  Trades per hour (temporal clustering)\n\n  **Points:** \u2265100/hr=15, \u226550/hr=12, \u226520/hr=8\n\n  **Why:** Catches pump-and-dump schemes and bot bursts\n\n  ### 5. Trade Uniformity (max 10 pts) \ud83e\udd16\n  Consistency of trade sizes\n\n  **Why:** Bots trade uniform amounts; humans vary\n\n  ---\n\n  ## \ud83d\udcc8 Score Example\n\n  **GOAT Token (Risk: 66)**\n  - Volume: 6 XRP \u2192 5 pts\n  - Focus: 1 trader \u2192 30 pts\n  - Price Var: Low \u2192 16 pts\n  - Burst: 257/hr \u2192 15 pts\n  - Uniformity: High \u2192 0 pts\n  - **Total: 66 points**\n\n  </td>\n  <td style=\"width: 33%; padding-left: 15px;\">\n\n  ## \ud83d\udd0d Investigation Guide\n\n  **Click Issuer \u2192 XRPScan**\n  View token issuer's transaction history, all tokens, counterparties\n\n  **Check Token Details:**\n  - New token? Low liquidity?\n  - Suspicious name or copycat?\n  - How many holders?\n\n  **Analyze Patterns:**\n  - **High Burst (\u226575):** Pump & dump attempt\n  - **Low Price Var (<1%):** Bot-executed trades\n  - **Few Takers (\u22645):** Coordinated manipulation\n  - **High Trades/Hour (\u226550):** Automated campaign\n\n  ---\n\n  ## \ud83c\udfaf Risk Tiers\n\n  - **CRITICAL (80-100)** - Very high likelihood\n  - **HIGH (70-79)** - Strong manipulation signals\n  - **MEDIUM (50-69)** - Moderate suspicious patterns\n  - **LOW (<50)** - Normal trading behavior\n\n  **Current Average:** 32.6 (healthy market)\n\n  ---\n\n  ## \ud83d\udea8 Red Flags\n\n  - \u2717 Only 1-2 unique traders\n  - \u2717 Burst score \u226575\n  - \u2717 Price variance <1%\n  - \u2717 Trades/hour \u2265100\n  - \u2717 High volume, few traders\n\n  ---\n\n  ## \u2705 Whitelist Status\n\n  Known legitimate tokens are whitelisted and excluded from risk scoring.\n  - Established DEX tokens\n  - Known stablecoins\n  - Verified projects\n  - Long-standing issuers\n\n  </td>\n  </tr>\n  </table>",
             "mode": "markdown"
           },
           "pluginVersion": "11.2.0",
@@ -697,7 +697,7 @@
           "type": "text"
         }
       ],
-      "title": "📖 Methodology Guide (Click to Learn About Wash Trading)",
+      "title": "\ud83d\udcd6 Methodology Guide (Click to Learn About Wash Trading)",
       "type": "row"
     },
     {
@@ -710,7 +710,7 @@
       },
       "id": 13,
       "panels": [],
-      "title": "Top 10 Suspicious Tokens",
+      "title": "\ud83c\udfaf Price Manipulation Leader Board",
       "type": "row"
     },
     {
@@ -719,7 +719,7 @@
         "type": "grafana-clickhouse-datasource",
         "uid": "ef1kycnokfoxsa"
       },
-      "description": "🔍 Tokens ranked by manipulation risk score (0-100).<br><br>Click Issuer links to investigate on XRPScan.<br><br>🔴 Red scores (≥70) = Strong\n  manipulation signals<br>🟡 Yellow scores (50-69) = Moderate suspicious patterns<br><br>Automatically filters out bridges and whitelisted tokens.",
+      "description": "High-impact manipulation patterns with significant XRP volume. These tokens warrant immediate investigation.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -962,7 +962,7 @@
           },
           "pluginVersion": "4.11.1",
           "queryType": "table",
-          "rawSql": "WITH trade_stats AS (\n      SELECT\n        exec_iou_code as token_code,\n        exec_iou_issuer as token_issuer,\n        COUNT(*) as total_trades,\n        COUNT(DISTINCT taker) as unique_takers,\n        SUM(ABS(exec_xrp)) as total_xrp_volume,\n        AVG(exec_price) as avg_price,\n        stddevPop(exec_price) as price_stddev,\n        AVG(ABS(exec_xrp)) as avg_trade_size,\n        stddevPop(ABS(exec_xrp)) as trade_size_stddev,\n        min(time) as first_trade,\n        max(time) as last_trade\n      FROM xrp_watchdog.executed_trades\n      WHERE $__timeFilter(time)\n      GROUP BY token_code, token_issuer\n      HAVING total_trades >= 3\n    )\n    SELECT\n      CASE\n        WHEN length(ts.token_code) = 40 THEN\n          CASE\n            WHEN isValidUTF8(unhex(ts.token_code)) THEN upper(replaceRegexpAll(unhex(ts.token_code), '\\0', ''))\n            ELSE concat('$', substring(ts.token_code, 1, 4), '...', substring(ts.token_code, 37, 4))\n          END\n        ELSE upper(ts.token_code)\n      END as \"Token\",\n      ts.token_issuer as \"Issuer\",\n      ROUND(LEAST(\n        LEAST(50, log10(ts.total_xrp_volume / 1000000 + 1) * 12.5) +\n        CASE\n          WHEN ts.unique_takers <= 2 THEN 30\n          WHEN ts.unique_takers <= 5 THEN 22\n          WHEN ts.unique_takers <= 10 THEN 15\n          WHEN ts.unique_takers <= 20 THEN 8\n          ELSE 3\n        END +\n        CASE\n          WHEN (ts.price_stddev / GREATEST(ts.avg_price, 0.0001)) * 100 < 0.5 THEN 20\n          WHEN (ts.price_stddev / GREATEST(ts.avg_price, 0.0001)) * 100 < 1 THEN 16\n          WHEN (ts.price_stddev / GREATEST(ts.avg_price, 0.0001)) * 100 < 3 THEN 12\n          WHEN (ts.price_stddev / GREATEST(ts.avg_price, 0.0001)) * 100 < 5 THEN 8\n          WHEN (ts.price_stddev / GREATEST(ts.avg_price, 0.0001)) * 100 < 10 THEN 4\n          ELSE 1\n        END +\n        CASE\n          WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 100 THEN 15\n          WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 50 THEN 12\n          WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 20 THEN 8\n          WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 10 THEN 5\n          ELSE 2\n        END +\n        CASE\n          WHEN (ts.trade_size_stddev / GREATEST(ts.avg_trade_size, 0.0001)) * 100 < 2 THEN 10\n          WHEN (ts.trade_size_stddev / GREATEST(ts.avg_trade_size, 0.0001)) * 100 < 5 THEN 7\n          WHEN (ts.trade_size_stddev / GREATEST(ts.avg_trade_size, 0.0001)) * 100 < 10 THEN 4\n          ELSE 1\n        END,\n        100\n      ), 1) as \"Risk Score\",\n      ts.total_trades as \"Trades\",\n      ROUND(ts.total_xrp_volume, 0) as \"Volume (XRP)\",\n      ROUND((ts.price_stddev / GREATEST(ts.avg_price, 0.0001)) * 100, 1) as \"Price Var %\",\n      ROUND(ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01), 1) as \"Trades/Hour\",\n      ROUND(CASE\n        WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 100 THEN 100\n        WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 50 THEN 80\n        WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 20 THEN 53\n        WHEN ts.total_trades / GREATEST((toUnixTimestamp(ts.last_trade) - toUnixTimestamp(ts.first_trade)) / 3600.0, 0.01) >= 10 THEN 33\n        ELSE 13\n      END, 0) as \"Burst\",\n      formatDateTime(ts.last_trade, '%Y-%m-%d %H:%M') as \"Updated\"\n    FROM trade_stats ts\n    LEFT JOIN xrp_watchdog.token_stats tst\n      ON ts.token_code = tst.token_code\n      AND ts.token_issuer = tst.token_issuer\n    WHERE ts.token_issuer NOT IN (\n      SELECT token_issuer FROM xrp_watchdog.token_whitelist\n    )\n    AND (\n      tst.classification IS NULL\n      OR tst.classification NOT IN ('bridge', 'legitimate')\n    )\n    AND NOT (\n      upper(CASE WHEN length(ts.token_code) = 40 THEN replaceRegexpAll(unhex(ts.token_code), '\\0', '') ELSE ts.token_code END) LIKE '%.AXL'\n      OR upper(CASE WHEN length(ts.token_code) = 40 THEN replaceRegexpAll(unhex(ts.token_code), '\\0', '') ELSE ts.token_code END) LIKE 'USDC%AXL%'\n      OR upper(CASE WHEN length(ts.token_code) = 40 THEN replaceRegexpAll(unhex(ts.token_code), '\\0', '') ELSE ts.token_code END) LIKE '%BRIDGE%'\n      OR upper(CASE WHEN length(ts.token_code) = 40 THEN replaceRegexpAll(unhex(ts.token_code), '\\0', '') ELSE ts.token_code END) LIKE 'WRAPPED%'\n      OR upper(CASE WHEN length(ts.token_code) = 40 THEN replaceRegexpAll(unhex(ts.token_code), '\\0', '') ELSE ts.token_code END) LIKE '%ALLBRIDGE%'\n    )\n    ORDER BY \"Risk Score\" DESC, ts.total_trades DESC\n    LIMIT 10",
+          "rawSql": "-- XRP Watchdog v2.0 Risk Scoring Algorithm\n-- Expert-reviewed by ChatGPT-5 and Grok-4\n-- Key changes:\n--   1. Volume component: 50 -> 60 points max\n--   2. Dual-window: 24h for patterns, 7d for impact\n--   3. Impact factor: smooth logarithmic curve\n--   4. Final priority = risk_score \u00d7 impact_factor\n--   5. Minimum trades: 3 -> 5 (reduces noise)\n\nWITH stats_24h AS (\n  -- 24-hour window: Pattern detection (burst, precision, concentration)\n  SELECT\n    exec_iou_code as token_code,\n    exec_iou_issuer as token_issuer,\n    COUNT(*) as total_trades,\n    COUNT(DISTINCT taker) as unique_takers,\n    SUM(ABS(exec_xrp)) as total_xrp_volume_24h,\n    AVG(exec_price) as avg_price,\n    stddevPop(exec_price) as price_stddev,\n    AVG(ABS(exec_xrp)) as avg_trade_size,\n    stddevPop(ABS(exec_xrp)) as trade_size_stddev,\n    min(time) as first_trade,\n    max(time) as last_trade\n  FROM xrp_watchdog.executed_trades\n  WHERE $__timeFilter(time)\n  GROUP BY token_code, token_issuer\n  HAVING total_trades >= 5  -- v2.0: Increased from 3 to reduce micro-blips\n),\n\nstats_7d AS (\n  -- 7-day window: Volume for impact assessment\n  SELECT\n    exec_iou_code as token_code,\n    exec_iou_issuer as token_issuer,\n    SUM(ABS(exec_xrp)) as total_xrp_volume_7d,\n    COUNT(*) as total_trades_7d\n  FROM xrp_watchdog.executed_trades\n  WHERE time >= now() - INTERVAL 7 DAY\n  GROUP BY token_code, token_issuer\n)\n\nSELECT\n  -- Token display (UTF-8 validated)\n  CASE\n    WHEN length(s24.token_code) = 40 THEN\n      CASE\n        WHEN isValidUTF8(unhex(s24.token_code)) THEN upper(replaceRegexpAll(unhex(s24.token_code), '\\0', ''))\n        ELSE concat('$', substring(s24.token_code, 1, 4), '...', substring(s24.token_code, 37, 4))\n      END\n    ELSE upper(s24.token_code)\n  END as \"Token\",\n\n  s24.token_issuer as \"Issuer\",\n\n  -- === RISK SCORE (0-100) === Behavioral pattern detection (24h window)\n  ROUND(LEAST(\n    -- Volume component (v2.0: max 60, adjusted scaling)\n    LEAST(60, log10(s24.total_xrp_volume_24h / 100000 + 1) * 15) +\n\n    -- Token Focus component (max 30)\n    CASE\n      WHEN s24.unique_takers <= 2 THEN 30\n      WHEN s24.unique_takers <= 5 THEN 22\n      WHEN s24.unique_takers <= 10 THEN 15\n      WHEN s24.unique_takers <= 20 THEN 8\n      ELSE 3\n    END +\n\n    -- Price Stability component (max 20)\n    CASE\n      WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 0.5 THEN 20\n      WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 1 THEN 16\n      WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 3 THEN 12\n      WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 5 THEN 8\n      WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 10 THEN 4\n      ELSE 1\n    END +\n\n    -- Burst Detection component (max 15)\n    CASE\n      WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 100 THEN 15\n      WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 50 THEN 12\n      WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 20 THEN 8\n      WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 5\n      ELSE 2\n    END +\n\n    -- Trade Size Uniformity component (max 10)\n    CASE\n      WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 2 THEN 10\n      WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 5 THEN 7\n      WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 10 THEN 4\n      ELSE 1\n    END,\n    100\n  ), 1) as \"Risk Score\",\n\n  -- === IMPACT FACTOR (0-1.0) === Market relevance (7d volume)\n  -- Smooth logarithmic curve: suppresses micro-volumes, preserves large\n  -- 0.1 XRP -> 0.04, 10 XRP -> 0.30, 100 XRP -> 0.66, 1000 XRP -> 0.90\n  ROUND(LEAST(1.0, log10(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h) / 10 + 1)), 2) as \"Impact Factor\",\n\n  -- === FINAL PRIORITY === Risk \u00d7 Impact (what matters)\n  ROUND(\n    LEAST(\n      LEAST(60, log10(s24.total_xrp_volume_24h / 100000 + 1) * 15) +\n      CASE WHEN s24.unique_takers <= 2 THEN 30 WHEN s24.unique_takers <= 5 THEN 22 WHEN s24.unique_takers <= 10 THEN 15 WHEN s24.unique_takers <= 20 THEN 8 ELSE 3 END +\n      CASE WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 0.5 THEN 20 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 1 THEN 16 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 3 THEN 12 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 5 THEN 8 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END +\n      CASE WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 100 THEN 15 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 50 THEN 12 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 20 THEN 8 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 5 ELSE 2 END +\n      CASE WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 2 THEN 10 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 5 THEN 7 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END,\n      100\n    ) * LEAST(1.0, log10(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h) / 10 + 1))\n  , 1) as \"Final Priority\",\n\n  -- Supporting metrics\n  s24.total_trades as \"Trades\",\n  ROUND(s24.total_xrp_volume_24h, 0) as \"XRP Volume (24h)\",\n  ROUND(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h), 0) as \"XRP Volume (7d)\",\n  ROUND((s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100, 1) as \"Price Var %\",\n  ROUND(s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01), 1) as \"Trades/Hour\",\n  ROUND(CASE\n    WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 100 THEN 100\n    WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 50 THEN 80\n    WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 20 THEN 53\n    WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 33\n    ELSE 13\n  END, 0) as \"Burst\",\n  formatDateTime(s24.last_trade, '%Y-%m-%d %H:%M') as \"Updated\"\n\nFROM stats_24h s24\nLEFT JOIN stats_7d s7\n  ON s24.token_code = s7.token_code\n  AND s24.token_issuer = s7.token_issuer\n\n-- Whitelist filtering\nLEFT JOIN xrp_watchdog.token_stats tst\n  ON s24.token_code = tst.token_code\n  AND s24.token_issuer = tst.token_issuer\nWHERE s24.token_issuer NOT IN (\n  SELECT token_issuer FROM xrp_watchdog.token_whitelist\n)\nAND (\n  tst.classification IS NULL\n  OR tst.classification NOT IN ('bridge', 'legitimate')\n)\nAND NOT (\n  upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE '%.AXL'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE 'USDC%AXL%'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE '%BRIDGE%'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE 'WRAPPED%'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE '%ALLBRIDGE%'\n)\n\n-- Actionable view: Filter by volume threshold\n-- Research view: Remove this filter to see all patterns\nAND s24.total_xrp_volume_24h >= 10  -- v2.0: Minimum impact threshold\n\nORDER BY \"Final Priority\" DESC, \"Risk Score\" DESC\nLIMIT 20;\n",
           "refId": "A"
         }
       ],
@@ -980,7 +980,293 @@
           }
         }
       ],
-      "type": "table"
+      "type": "table",
+      "title": "\ud83c\udfaf Actionable Threats (\u226510 XRP)"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "id": 21,
+      "panels": [
+        {
+          "datasource": {
+            "default": false,
+            "type": "grafana-clickhouse-datasource",
+            "uid": "ef1kycnokfoxsa"
+          },
+          "description": "All high-risk behavioral patterns regardless of volume. Useful for research and early detection.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "orange",
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "purple",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Issuer"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "View on XRPScan",
+                        "url": "https://xrpscan.com/account/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.minWidth",
+                    "value": 400
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Volume (XRP)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Risk Score"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "green",
+                          "value": null
+                        },
+                        {
+                          "color": "yellow",
+                          "value": 50
+                        },
+                        {
+                          "color": "orange",
+                          "value": 70
+                        },
+                        {
+                          "color": "red",
+                          "value": 85
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Updated"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Trades"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Price Var %"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Trades/Hour"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Burst"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Token"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 200
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 23,
+            "w": 24,
+            "x": 0,
+            "y": 46
+          },
+          "id": 20,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Risk Score"
+              }
+            ]
+          },
+          "pluginVersion": "11.2.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "ef1kycnokfoxsa"
+              },
+              "editorType": "sql",
+              "format": 1,
+              "meta": {
+                "builderOptions": {
+                  "columns": [],
+                  "database": "",
+                  "limit": 1000,
+                  "mode": "list",
+                  "queryType": "table",
+                  "table": ""
+                }
+              },
+              "pluginVersion": "4.11.1",
+              "queryType": "table",
+              "rawSql": "-- XRP Watchdog v2.0 Research View\n-- Shows ALL high-risk behavioral patterns (no volume filter)\n-- Purpose: Catch early-stage manipulation, bot testing, emerging threats\n-- Display: Collapsible panel labeled \"Research / Low Impact Patterns\"\n\n-- Same as Actionable view but:\n--   1. No 10 XRP minimum filter\n--   2. Shows \"Impact Tier\" badge column\n--   3. Includes micro-volume patterns for research\n\nWITH stats_24h AS (\n  SELECT\n    exec_iou_code as token_code,\n    exec_iou_issuer as token_issuer,\n    COUNT(*) as total_trades,\n    COUNT(DISTINCT taker) as unique_takers,\n    SUM(ABS(exec_xrp)) as total_xrp_volume_24h,\n    AVG(exec_price) as avg_price,\n    stddevPop(exec_price) as price_stddev,\n    AVG(ABS(exec_xrp)) as avg_trade_size,\n    stddevPop(ABS(exec_xrp)) as trade_size_stddev,\n    min(time) as first_trade,\n    max(time) as last_trade\n  FROM xrp_watchdog.executed_trades\n  WHERE $__timeFilter(time)\n  GROUP BY token_code, token_issuer\n  HAVING total_trades >= 5\n),\n\nstats_7d AS (\n  SELECT\n    exec_iou_code as token_code,\n    exec_iou_issuer as token_issuer,\n    SUM(ABS(exec_xrp)) as total_xrp_volume_7d\n  FROM xrp_watchdog.executed_trades\n  WHERE time >= now() - INTERVAL 7 DAY\n  GROUP BY token_code, token_issuer\n)\n\nSELECT\n  -- Token display\n  CASE\n    WHEN length(s24.token_code) = 40 THEN\n      CASE\n        WHEN isValidUTF8(unhex(s24.token_code)) THEN upper(replaceRegexpAll(unhex(s24.token_code), '\\0', ''))\n        ELSE concat('$', substring(s24.token_code, 1, 4), '...', substring(s24.token_code, 37, 4))\n      END\n    ELSE upper(s24.token_code)\n  END as \"Token\",\n\n  s24.token_issuer as \"Issuer\",\n\n  -- Risk Score (same calculation as Actionable view)\n  ROUND(LEAST(\n    LEAST(60, log10(s24.total_xrp_volume_24h / 100000 + 1) * 15) +\n    CASE WHEN s24.unique_takers <= 2 THEN 30 WHEN s24.unique_takers <= 5 THEN 22 WHEN s24.unique_takers <= 10 THEN 15 WHEN s24.unique_takers <= 20 THEN 8 ELSE 3 END +\n    CASE WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 0.5 THEN 20 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 1 THEN 16 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 3 THEN 12 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 5 THEN 8 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END +\n    CASE WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 100 THEN 15 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 50 THEN 12 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 20 THEN 8 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 5 ELSE 2 END +\n    CASE WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 2 THEN 10 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 5 THEN 7 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END,\n    100\n  ), 1) as \"Risk Score\",\n\n  -- Impact Factor (7d volume)\n  ROUND(LEAST(1.0, log10(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h) / 10 + 1)), 2) as \"Impact Factor\",\n\n  -- Final Priority\n  ROUND(\n    LEAST(\n      LEAST(60, log10(s24.total_xrp_volume_24h / 100000 + 1) * 15) +\n      CASE WHEN s24.unique_takers <= 2 THEN 30 WHEN s24.unique_takers <= 5 THEN 22 WHEN s24.unique_takers <= 10 THEN 15 WHEN s24.unique_takers <= 20 THEN 8 ELSE 3 END +\n      CASE WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 0.5 THEN 20 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 1 THEN 16 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 3 THEN 12 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 5 THEN 8 WHEN (s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END +\n      CASE WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 100 THEN 15 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 50 THEN 12 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 20 THEN 8 WHEN s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01) >= 10 THEN 5 ELSE 2 END +\n      CASE WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 2 THEN 10 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 5 THEN 7 WHEN (s24.trade_size_stddev / GREATEST(s24.avg_trade_size, 0.0001)) * 100 < 10 THEN 4 ELSE 1 END,\n      100\n    ) * LEAST(1.0, log10(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h) / 10 + 1))\n  , 1) as \"Final Priority\",\n\n  -- Impact Tier badge (Research view exclusive)\n  CASE\n    WHEN s24.total_xrp_volume_24h < 1 THEN '\u26aa Negligible'\n    WHEN s24.total_xrp_volume_24h < 10 THEN '\ud83d\udfe2 Low Impact'\n    WHEN s24.total_xrp_volume_24h < 100 THEN '\ud83d\udfe1 Moderate'\n    WHEN s24.total_xrp_volume_24h < 1000 THEN '\ud83d\udfe0 High'\n    ELSE '\ud83d\udd34 Critical'\n  END as \"Impact Tier\",\n\n  -- Supporting metrics\n  s24.total_trades as \"Trades\",\n  ROUND(s24.total_xrp_volume_24h, 2) as \"XRP Volume (24h)\",\n  ROUND(COALESCE(s7.total_xrp_volume_7d, s24.total_xrp_volume_24h), 0) as \"XRP Volume (7d)\",\n  ROUND((s24.price_stddev / GREATEST(s24.avg_price, 0.0001)) * 100, 1) as \"Price Var %\",\n  ROUND(s24.total_trades / GREATEST((toUnixTimestamp(s24.last_trade) - toUnixTimestamp(s24.first_trade)) / 3600.0, 0.01), 1) as \"Trades/Hour\",\n  formatDateTime(s24.last_trade, '%Y-%m-%d %H:%M') as \"Updated\"\n\nFROM stats_24h s24\nLEFT JOIN stats_7d s7\n  ON s24.token_code = s7.token_code\n  AND s24.token_issuer = s7.token_issuer\n\n-- Whitelist filtering\nLEFT JOIN xrp_watchdog.token_stats tst\n  ON s24.token_code = tst.token_code\n  AND s24.token_issuer = tst.token_issuer\nWHERE s24.token_issuer NOT IN (SELECT token_issuer FROM xrp_watchdog.token_whitelist)\nAND (tst.classification IS NULL OR tst.classification NOT IN ('bridge', 'legitimate'))\nAND NOT (\n  upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE '%.AXL'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE 'USDC%AXL%'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE '%BRIDGE%'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE 'WRAPPED%'\n  OR upper(CASE WHEN length(s24.token_code) = 40 THEN replaceRegexpAll(unhex(s24.token_code), '\\0', '') ELSE s24.token_code END) LIKE '%ALLBRIDGE%'\n)\n\n-- NO volume minimum filter (shows all patterns)\n-- Filter by risk score to keep relevant\n\nORDER BY \"Risk Score\" DESC, \"Final Priority\" DESC\nLIMIT 20;\n",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": "$window",
+          "transformations": [
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Risk Score"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table",
+          "title": "\ud83d\udd0d Research / Low Impact Patterns"
+        }
+      ],
+      "title": "\ud83d\udd2c Research: All High-Risk Patterns (Low Impact)",
+      "type": "row"
     }
   ],
   "refresh": "30s",
