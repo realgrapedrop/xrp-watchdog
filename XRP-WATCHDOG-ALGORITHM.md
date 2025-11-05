@@ -4,9 +4,17 @@
 
 XRP Watchdog is a real-time wash trading and market manipulation detection system for the XRP Ledger (XRPL) decentralized exchange. This document describes the risk scoring algorithm used to identify suspicious trading patterns.
 
-**Current Version:** 1.0 (November 2025)
-**Status:** Production Deployment
+**Current Version:** 2.0 (November 2025)
+**Status:** Production Deployment (Implemented November 5, 2025)
 **Maintainer:** @realGrapedrop
+
+**v2.0 Changes:**
+- Volume component: 50 → 60 points max
+- Dual-window scoring: 24h patterns + 7d impact assessment
+- Impact Factor: Smooth logarithmic curve (0-1.0)
+- Final Priority = Risk Score × Impact Factor
+- Minimum trades: 3 → 5 (reduces noise)
+- Two-view dashboard: Actionable (≥10 XRP) + Research (all patterns)
 
 ---
 
@@ -223,9 +231,87 @@ else: score += 1
 
 ---
 
-## Known Issues and Limitations
+## v2.0 Implementation (DEPLOYED)
 
-### Issue #1: Small Volume, High Score
+### Three-Score System
+
+The v2.0 algorithm implements expert-reviewed recommendations from ChatGPT-5 and Grok-4:
+
+```
+Risk Score (0-100)     = Behavioral pattern detection (24h window)
+Impact Factor (0-1.0)  = Market relevance (7d volume)
+Final Priority         = Risk Score × Impact Factor
+```
+
+### Volume Component Update
+
+**v1.0:** `min(50, log10(volume / 1_000_000 + 1) * 12.5)`
+**v2.0:** `min(60, log10(volume / 100_000 + 1) * 15)`
+
+**Impact:**
+- 100 XRP: 12.5 → 18.0 points (+44%)
+- 10,000 XRP: 31.3 → 39.0 points (+25%)
+- 1,000,000 XRP: 50.0 → 60.0 points (+20%)
+
+### Impact Factor (ChatGPT-5's Smooth Curve)
+
+```sql
+impact_factor = min(1.0, log10(volume_7d / 10 + 1))
+```
+
+| 7-Day Volume | Impact Factor | Effect on Final Priority |
+|--------------|---------------|---------------------------|
+| 0.1 XRP | 0.04 | 96% reduction |
+| 10 XRP | 0.30 | 70% reduction |
+| 100 XRP | 0.66 | 34% reduction |
+| 1,000 XRP | 0.90 | 10% reduction |
+| 10,000+ XRP | 1.00 | No reduction |
+
+### Dual-Window Scoring
+
+- **24-hour window:** Pattern detection (burst, precision, concentration)
+- **7-day window:** Volume for impact assessment
+- **Why:** Avoids single-day micro-blips looking "big"
+
+### Dashboard Views
+
+**Actionable Threats (Default):**
+- Filter: `volume_24h >= 10 XRP`
+- Displays: Risk Score, Impact Factor, Final Priority, volumes
+- Sorted by: Final Priority DESC
+- Purpose: Real threats that matter
+
+**Research / Low Impact Patterns (Collapsible):**
+- Filter: None (all patterns shown)
+- Displays: Same as Actionable + Impact Tier badges
+- Badges: ⚪ Negligible, 🟢 Low, 🟡 Moderate, 🟠 High, 🔴 Critical
+- Purpose: Early detection, bot research
+
+### Example: XRPNORTH Token
+
+**v1.0 Result:**
+- Risk Score: 75 (HIGH)
+- Display: ✅ Top 10 dashboard (prominent)
+
+**v2.0 Result:**
+- Risk Score: 75 (behavioral patterns detected)
+- 7d Volume: 20 XRP
+- Impact Factor: 0.38
+- **Final Priority: 28.5**
+- Display: 🔍 Research view only (hidden from main)
+
+### Files Updated
+
+- `queries/v2_risk_scoring.sql` - Actionable threats query
+- `queries/v2_research_view.sql` - Research patterns query
+- `grafana/xrp-watchdog-dashboard.json` - Dual-panel dashboard
+- `scripts/update_dashboard_v2.py` - Dashboard update automation
+
+---
+
+## Known Issues and Limitations (v1.0 - RESOLVED in v2.0)
+
+### Issue #1: Small Volume, High Score (FIXED)
 
 **Problem:**
 - Tokens with <1 XRP volume can score 70+ due to behavioral patterns

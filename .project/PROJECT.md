@@ -10,6 +10,87 @@ XRP Watchdog is a real-time wash trading and market manipulation detection syste
 
 ---
 
+## v2.0 Algorithm Implementation (November 5, 2025)
+
+### Major Changes
+
+**Algorithm v2.0 - Expert-Reviewed Impact Weighting:**
+- Volume component: 50 → 60 points max (+20% weight increase)
+- Dual-window scoring: 24h for patterns, 7d for impact assessment
+- New Impact Factor metric: Smooth logarithmic curve (0-1.0)
+- Final Priority = Risk Score × Impact Factor
+- Minimum trades threshold: 3 → 5 (reduces noise)
+- Dashboard reorganized: "Price Manipulation Leader Board" with Actionable + Research views
+
+**Expert Review:**
+- Algorithm reviewed by ChatGPT-5 and Grok-4
+- Feedback documented in `CHATGPT5_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md` and `GROK4_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md`
+- All Tier 1 + Tier 2 recommendations implemented
+
+**Impact:**
+- Small-volume noise (e.g., XRPNORTH 0.11 XRP) filtered from main view
+- Micro-volumes suppressed by 96% (impact factor 0.04)
+- Focus shifted to XRP-scale manipulation (≥10 XRP threshold)
+- Risk scores rebalanced: 45-68 range instead of inflated 70-95
+
+**Dashboard Updates:**
+- Main panel: "🎯 Actionable Threats" - shows ≥10 XRP volume only
+- New panel: "🔬 Research" (collapsed) - shows all high-risk patterns with Impact Tier badges
+- New columns: XRP Volume (24h), XRP Volume (7d), Impact Factor, Final Priority
+- Row renamed: "🎯 Price Manipulation Leader Board" (dropped version number per user feedback)
+
+**Files Added:**
+- `queries/v2_risk_scoring.sql` - Actionable threats query
+- `queries/v2_research_view.sql` - Research patterns query
+- `scripts/update_dashboard_v2.py` - Dashboard automation
+- `RESTORE_v1.sh` - Emergency rollback script
+- `CHATGPT5_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md`
+- `GROK4_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md`
+
+**Files Updated:**
+- `grafana/xrp-watchdog-dashboard.json` - v30 → v35 (dual-panel implementation)
+- `XRP-WATCHDOG-ALGORITHM.md` - Added v2.0 implementation section
+
+---
+
+## Git Commit Policy
+
+### ⚠️ IMPORTANT: AI Attribution Policy
+
+**DO NOT include AI co-author attribution in git commits.**
+
+For security and professional reasons, all commits should be attributed only to the human maintainer (@realGrapedrop), even when AI assistants (Claude Code, ChatGPT, etc.) contributed to the implementation.
+
+**Correct commit format:**
+```bash
+git commit -m "feat: Description of changes
+
+Details about what was implemented and why.
+"
+```
+
+**INCORRECT (do not use):**
+```bash
+git commit -m "feat: Description
+
+Co-Authored-By: Claude <noreply@anthropic.com>"  # ❌ NEVER include this
+```
+
+**Rationale:**
+- Professional presentation
+- Security considerations
+- Clear responsibility chain
+- Standard open-source practice
+
+**AI Contributions Acknowledged:**
+While AI tools are not credited in commits, their contributions are documented in:
+- Algorithm review responses (`*_EXPERT-RESPONSE.md` files)
+- Design decision documentation
+- Code comments where appropriate
+- This PROJECT.md file
+
+---
+
 ## System Architecture
 
 ### Core Components
