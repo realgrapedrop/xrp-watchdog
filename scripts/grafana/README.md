@@ -122,13 +122,13 @@ nano ../../grafana/xrp-watchdog-dashboard.json
 
 ---
 
-## Integration with Claude Code
+## Development Workflow
 
 These scripts enable fast iteration:
-1. Claude makes changes to dashboard JSON
-2. Runs `update-dashboard.sh` automatically
-3. User refreshes browser to see changes
-4. If issues arise, runs `restore-dashboard.sh` to rollback
+1. Make changes to dashboard JSON locally
+2. Run `update-dashboard.sh` to push changes
+3. Refresh browser to see updates instantly
+4. If issues arise, run `restore-dashboard.sh` to rollback
 5. No more manual export/SCP/import cycle!
 
 **Speed improvement:** 30 seconds → 3 seconds per iteration 🚀

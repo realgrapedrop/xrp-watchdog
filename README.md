@@ -331,7 +331,6 @@ xrp-watchdog/
 │   └── migrations/
 │       ├── 001_add_risk_score_v2.sql
 │       └── 002_rename_risk_score_column.sql
-├── CLAUDE.md                      # Comprehensive project documentation
 ├── README.md                      # This file
 ├── requirements.txt               # Python dependencies
 ├── run_analyzer.sh                # Analyzer execution script
@@ -417,7 +416,7 @@ python analyzers/token_analyzer.py
 
 1. **Database Schema Changes**: Create migration in `sql/migrations/`
 2. **Collector Enhancements**: Modify `collection_orchestrator.py`
-3. **Risk Algorithm Updates**: Update `token_analyzer.py` and `CLAUDE.md`
+3. **Risk Algorithm Updates**: Update `token_analyzer.py` and README.md
 4. **Dashboard Changes**: Document queries in `grafana/token_stats_queries.md`
 
 ### Code Style
