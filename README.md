@@ -1,5 +1,9 @@
 # XRP Watchdog
 
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![XRP Ledger](https://img.shields.io/badge/XRPL-DEX-orange.svg)](https://xrpl.org/)
+
 Real-time wash trading and token manipulation detection system for the XRP Ledger DEX.
 
 ## Overview
