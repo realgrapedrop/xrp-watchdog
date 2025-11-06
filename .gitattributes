@@ -1,0 +1,13 @@
+# Exclude vendor directories from language statistics
+venv/** linguist-vendored
+data/** linguist-vendored
+*.json linguist-vendored=false
+
+# Mark primary language
+*.py linguist-language=Python
+
+# Documentation
+*.md linguist-documentation
+
+# Scripts
+scripts/getMakerTaker.sh linguist-language=Shell
