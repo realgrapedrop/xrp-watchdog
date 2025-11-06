@@ -10,46 +10,55 @@ XRP Watchdog is a real-time wash trading and market manipulation detection syste
 
 ---
 
-## v2.0 Algorithm Implementation (November 5, 2025)
+## v2.0 Dashboard & Algorithm Updates (November 5-6, 2025)
 
-### Major Changes
+### Algorithm v2.0 - Production Deployment
 
-**Algorithm v2.0 - Expert-Reviewed Impact Weighting:**
+**Core Changes:**
 - Volume component: 50 → 60 points max (+20% weight increase)
 - Dual-window scoring: 24h for patterns, 7d for impact assessment
-- New Impact Factor metric: Smooth logarithmic curve (0-1.0)
-- Final Priority = Risk Score × Impact Factor
+- Logarithmic volume scaling with real examples (1K ≈ 5pts, 10K ≈ 12pts, 100K ≈ 25pts, 1M ≈ 38pts)
 - Minimum trades threshold: 3 → 5 (reduces noise)
-- Dashboard reorganized: "Price Manipulation Leader Board" with Actionable + Research views
+- Algorithm now fully documented in README.md
 
-**Expert Review:**
-- Algorithm reviewed by ChatGPT-5 and Grok-4
-- Feedback documented in `CHATGPT5_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md` and `GROK4_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md`
-- All Tier 1 + Tier 2 recommendations implemented
+**Production Metrics (as of November 6, 2025):**
+- 282,735+ trades collected
+- 502 active tokens analyzed
+- 928 total tokens tracked
+- Average risk score: 30.2 (healthy market)
+- 16 high-risk tokens (≥60 score)
 
-**Impact:**
-- Small-volume noise (e.g., XRPNORTH 0.11 XRP) filtered from main view
-- Micro-volumes suppressed by 96% (impact factor 0.04)
-- Focus shifted to XRP-scale manipulation (≥10 XRP threshold)
-- Risk scores rebalanced: 45-68 range instead of inflated 70-95
+### Dashboard v2.0 - UX Improvements (November 6, 2025)
 
-**Dashboard Updates:**
-- Main panel: "🎯 Actionable Threats" - shows ≥10 XRP volume only
-- New panel: "🔬 Research" (collapsed) - shows all high-risk patterns with Impact Tier badges
-- New columns: XRP Volume (24h), XRP Volume (7d), Impact Factor, Final Priority
-- Row renamed: "🎯 Price Manipulation Leader Board" (dropped version number per user feedback)
+**Methodology Guide Overhaul:**
+- Three-column balanced layout for optimal readability
+- Collapsed by default to show main content immediately
+- Column 1: Detection fundamentals, manipulation tactics, real-world impact
+- Column 2: Complete 5-component algorithm breakdown with LESS token example
+- Column 3: Investigation workflow, risk tiers, red flags, volume scale
+- Removed redundant content (Recent Examples section)
+- Added useful content (Historical pattern tracking note, score refresh frequency)
 
-**Files Added:**
-- `queries/v2_risk_scoring.sql` - Actionable threats query
-- `queries/v2_research_view.sql` - Research patterns query
-- `scripts/update_dashboard_v2.py` - Dashboard automation
-- `RESTORE_v1.sh` - Emergency rollback script
-- `CHATGPT5_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md`
-- `GROK4_XRP-WATCHDOG-ALGORITHM_EXPERT-RESPONSE.md`
+**Panel Structure:**
+- Overview stats: 7 key metrics (Tracked, Active, Suspicious Rate, Total Trades, etc.)
+- Heatmaps: Suspicious Activity (7 days), Token Diversity Over Time
+- Volume charts: XRP Volume, Trade Volume Over Time
+- Main table: Price Manipulation Leader Board with dual-window columns (24h/7d)
+- Research panel: All High-Risk Patterns (collapsed, low impact tokens)
+
+**Table Columns:**
+- Token, Issuer (clickable to XRPScan)
+- Risk Score (0-100 with color coding)
+- Trades count
+- XRP Volume (24h) - short-term activity
+- XRP Volume (7d) - impact assessment
+- Price Var %, Trades/Hour, Burst, Duration (min)
 
 **Files Updated:**
-- `grafana/xrp-watchdog-dashboard.json` - v30 → v35 (dual-panel implementation)
-- `XRP-WATCHDOG-ALGORITHM.md` - Added v2.0 implementation section
+- `grafana/xrp-watchdog-dashboard.json` - Now at v63 (production-ready)
+- `images/xrp-watchdog-screenshot.png` - Updated with current data
+- `README.md` - Complete v2.0 documentation
+- `analyzers/token_analyzer.py` - Dual-window implementation
 
 ---
 
@@ -204,8 +213,7 @@ While AI tools are not credited in commits, their contributions are documented i
 ├── run_collection.sh                   # Cron wrapper script
 ├── requirements.txt                    # Python dependencies
 ├── venv/                               # Python virtual environment
-├── README.md                           # User-facing documentation
-└── CLAUDE.md                           # AI assistant context (this file)
+└── README.md                           # User-facing documentation
 ```
 
 ---
@@ -928,7 +936,6 @@ tail -20 logs/auto_collection.log | grep "Collection Complete"
 ├── uninstall.sh         # Removal script
 ├── health_check.sh      # Monitoring script
 ├── README.md            # User documentation
-├── CLAUDE.md            # AI assistant context (this file)
 ├── LICENSE              # Open source license
 └── .gitignore           # Git exclusions
 ```

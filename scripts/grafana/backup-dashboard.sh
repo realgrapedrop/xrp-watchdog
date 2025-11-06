@@ -29,10 +29,6 @@ if [ -s "$BACKUP_FILE" ]; then
   echo "   Size: $SIZE"
   echo "   Version: $VERSION"
 
-  # Also update the main dashboard file
-  cp "$BACKUP_FILE" "$PROJECT_ROOT/grafana/xrp-watchdog-dashboard.json"
-  echo "✅ Updated: grafana/xrp-watchdog-dashboard.json"
-
   # Keep only last 10 backups
   cd "$BACKUP_DIR"
   ls -t dashboard-backup-*.json | tail -n +11 | xargs -r rm
