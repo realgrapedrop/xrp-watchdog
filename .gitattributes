@@ -1,13 +1,22 @@
-# Exclude vendor directories from language statistics
+# Exclude vendor/generated directories from language statistics
 venv/** linguist-vendored
 data/** linguist-vendored
-*.json linguist-vendored=false
+backups/** linguist-vendored
+grafana/backups/** linguist-vendored
+logs/** linguist-vendored
+.project/** linguist-documentation
+
+# Exclude large setup/config files from stats
+install.sh linguist-vendored
+uninstall.sh linguist-vendored
+grafana/**/*.json linguist-generated
 
 # Mark primary language
 *.py linguist-language=Python
 
 # Documentation
 *.md linguist-documentation
+*.sql linguist-detectable=false
 
-# Scripts
-scripts/getMakerTaker.sh linguist-language=Shell
+# Keep shell scripts but don't let them dominate
+*.sh linguist-language=Shell
