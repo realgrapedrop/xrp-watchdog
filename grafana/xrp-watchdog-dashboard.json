@@ -24,6 +24,58 @@
   "liveNow": true,
   "panels": [
     {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 16,
+      "panels": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "ef1kycnokfoxsa"
+          },
+          "gridPos": {
+            "h": 30,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 14,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<table style=\"width: 100%; border: none;\">\n  <tr style=\"vertical-align: top;\">\n  <td style=\"width: 33%; padding-right: 15px;\">\n\n  ## 🎯 What Are We Detecting?\n\n  **Token-level manipulation** on XRPL DEX using coordinated accounts to create artificial activity.\n\n  **Goal:** Make token appear popular/valuable\n  **Result:** Real traders buy inflated token, manipulators dump for profit\n\n  ---\n\n  ## 🎭 Manipulation Tactics\n\n  **Wash Trading:** Same entity trades with itself to fake volume\n\n  **Layering:** Fake orders create demand illusion\n\n  **Pump & Dump:** Coordinate buying, sell at peak\n\n  **Bot Campaigns:** Automated trading over days/weeks\n\n  **Real-World Impact:**\n  - Retail traders lose money on fake volume\n  - Legitimate projects lose credibility\n  - Market distrust increases\n  - Attracts regulatory scrutiny\n\n ---\n\n  ## 📊 Detection Capabilities\n\n  **What We Catch & Monitor:**\n  - Automated bot campaigns\n  - Pump & dump schemes\n  - Coordinated wash trading\n  - Fake volume generation\n  - 100% ledger coverage\n  - Updates every 5 minutes\n  - Minimum 5 trades to qualify (reduces noise)\n  - Historical pattern tracking\n\n  ---\n\n  ## 📋 Table Columns Explained\n\n  - **Token** - Which token is being manipulated\n  - **Issuer** - Account that created the token (click to view on XRPScan)\n  - **Risk Score** - 0-100 manipulation likelihood\n  - **Trades** - Total number of executed trades\n  - **XRP Volume (24h/7d)** - Total XRP traded in time windows\n  - **Price Var %** - Price consistency (low = bot precision)\n  - **Trades/Hour** - Activity density (high = burst)\n  - **Burst** - Temporal clustering score (0-100)\n  - **Duration (min)** - How long the pattern lasted\n\n  </td>\n  <td style=\"width: 33%; padding: 0 15px;\">\n\n  ## 🏮 Risk Score Algorithm (5 Components)\n\n  ### 1. Volume (max 60 pts) 📈\n  Logarithmic scaling of XRP volume\n\n  **Scaling:** 1K XRP ≈ 5pts, 10K ≈ 12pts, 100K ≈ 25pts, 1M ≈ 38pts\n\n  **Why:** Large volumes indicate manipulation, but logarithmic curve prevents mega-volume from dominating other signals\n\n  ### 2. Token Focus (max 30 pts) 🪙\n  How many unique accounts trade this token\n\n  **Points:** ≤2 accounts=30, ≤5=22, ≤10=15\n\n  **Why:** Manipulators use few accounts, real tokens have many traders\n\n  ### 3. Price Stability (max 20 pts) 💵\n  Variance in trade prices\n\n  **Why:** Bots trade at precise prices; real markets have natural variance\n\n  ### 4. Burst Detection (max 15 pts) ⚡\n  Trades per hour (temporal clustering)\n\n  **Points:** ≥100/hr=15, ≥50/hr=12, ≥20/hr=8\n\n  **Why:** Catches pump-and-dump schemes and bot bursts\n\n  ### 5. Trade Uniformity (max 10 pts) 🤖\n  Consistency of trade sizes\n\n  **Why:** Bots trade uniform amounts; humans vary\n\n  ---\n\n  ## 📈 Score Example\n\n  **LESS Token (Risk: 72)**\n  - Volume: 9,481 XRP → 30 pts\n  - Focus: 2 traders → 30 pts\n  - Price Var: 0% → 20 pts\n  - Burst: 82.8/hr → 8 pts\n  - Uniformity: Low variance → 7 pts\n  - **Total: 72 points (HIGH risk)**\n  \n  **Pattern:** Ping-pong wash trading between 2 accounts creating 135x volume multiplier (70 XRP → 9,481 XRP apparent volume)\n  \n  *Scores recalculated every 5 minutes with latest data*\n\n  </td>\n  <td style=\"width: 33%; padding-left: 15px;\">\n\n  ## 🔍 Investigation Guide\n\n  **Click Issuer → XRPScan**\n  View token issuer's transaction history, all tokens, counterparties\n\n  **Check Token Details:**\n  - New token? Low liquidity?\n  - Suspicious name or copycat?\n  - How many holders?\n\n  **Analyze Patterns:**\n  - **High Burst (≥75):** Pump & dump attempt\n  - **Low Price Var (<1%):** Bot-executed trades\n  - **Few Takers (≤5):** Coordinated manipulation\n  - **High Trades/Hour (≥50):** Automated campaign\n\n  ---\n\n  ## 🎯 Risk Tiers\n\n  - **CRITICAL (80-100)** - Very high likelihood\n  - **HIGH (70-79)** - Strong manipulation signals\n  - **MEDIUM (50-69)** - Moderate suspicious patterns\n  - **LOW (<50)** - Normal trading behavior\n\n  **Current Average:** 32.6 (healthy market)\n\n  ---\n\n  ## 🚨 Red Flags\n\n  - ✗ Only 1-2 unique traders\n  - ✗ Burst score ≥75\n  - ✗ Price variance <1%\n  - ✗ Trades/hour ≥100\n\n  ---\n\n  ## 📊 Volume Scale\n\n  - <100 XRP: Noise/testing\n  - 100-1K: Small-scale\n  - 1K-10K: Moderate impact\n  - 10K-100K: High impact\n  - >100K: Major event\n\n  ---\n\n  ## ✅ Whitelist Status\n\n  Known legitimate tokens are whitelisted and excluded from risk scoring.\n  - Established DEX tokens\n  - Known stablecoins\n  - Verified projects\n  - Long-standing issuers\n\n  </td>\n  </tr>\n  </table>\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "11.2.0",
+          "transparent": true,
+          "type": "text"
+        }
+      ],
+      "title": "📖 Methodology Guide (Click to Learn About Wash Trading)",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 13,
+      "panels": [],
+      "title": "🎯 Welcome to {X}RP Watchdog - Your Price Manipulation Discovery Tool on the XRPL",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -33,7 +85,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 2
       },
       "id": 18,
       "options": {
@@ -78,7 +130,7 @@
         "h": 3,
         "w": 3,
         "x": 0,
-        "y": 2
+        "y": 4
       },
       "id": 1,
       "options": {
@@ -155,7 +207,7 @@
         "h": 3,
         "w": 3,
         "x": 3,
-        "y": 2
+        "y": 4
       },
       "id": 4,
       "options": {
@@ -248,7 +300,7 @@
         "h": 3,
         "w": 4,
         "x": 6,
-        "y": 2
+        "y": 4
       },
       "id": 3,
       "options": {
@@ -326,7 +378,7 @@
         "h": 3,
         "w": 5,
         "x": 10,
-        "y": 2
+        "y": 4
       },
       "id": 2,
       "options": {
@@ -403,7 +455,7 @@
         "h": 3,
         "w": 9,
         "x": 15,
-        "y": 2
+        "y": 4
       },
       "id": 17,
       "options": {
@@ -476,7 +528,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 7
       },
       "id": 11,
       "interval": "15s",
@@ -627,7 +679,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 7
       },
       "id": 22,
       "interval": "15s",
@@ -756,7 +808,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 12
       },
       "id": 6,
       "interval": "15s",
@@ -881,7 +933,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 12
       },
       "id": 23,
       "interval": "15s",
@@ -926,58 +978,6 @@
       "timeFrom": "$window",
       "title": "Trade Volume Over Time",
       "type": "timeseries"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 15
-      },
-      "id": 16,
-      "panels": [
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
-          },
-          "gridPos": {
-            "h": 30,
-            "w": 24,
-            "x": 0,
-            "y": 19
-          },
-          "id": 14,
-          "options": {
-            "code": {
-              "language": "plaintext",
-              "showLineNumbers": false,
-              "showMiniMap": false
-            },
-            "content": "<table style=\"width: 100%; border: none;\">\n  <tr style=\"vertical-align: top;\">\n  <td style=\"width: 33%; padding-right: 15px;\">\n\n  ## 🎯 What Are We Detecting?\n\n  **Token-level manipulation** on XRPL DEX using coordinated accounts to create artificial activity.\n\n  **Goal:** Make token appear popular/valuable\n  **Result:** Real traders buy inflated token, manipulators dump for profit\n\n  ---\n\n  ## 🎭 Manipulation Tactics\n\n  **Wash Trading:** Same entity trades with itself to fake volume\n\n  **Layering:** Fake orders create demand illusion\n\n  **Pump & Dump:** Coordinate buying, sell at peak\n\n  **Bot Campaigns:** Automated trading over days/weeks\n\n  **Real-World Impact:**\n  - Retail traders lose money on fake volume\n  - Legitimate projects lose credibility\n  - Market distrust increases\n  - Attracts regulatory scrutiny\n\n ---\n\n  ## 📊 Detection Capabilities\n\n  **What We Catch & Monitor:**\n  - Automated bot campaigns\n  - Pump & dump schemes\n  - Coordinated wash trading\n  - Fake volume generation\n  - 100% ledger coverage\n  - Updates every 5 minutes\n  - Minimum 5 trades to qualify (reduces noise)\n  - Historical pattern tracking\n\n  ---\n\n  ## 📋 Table Columns Explained\n\n  - **Token** - Which token is being manipulated\n  - **Issuer** - Account that created the token (click to view on XRPScan)\n  - **Risk Score** - 0-100 manipulation likelihood\n  - **Trades** - Total number of executed trades\n  - **XRP Volume (24h/7d)** - Total XRP traded in time windows\n  - **Price Var %** - Price consistency (low = bot precision)\n  - **Trades/Hour** - Activity density (high = burst)\n  - **Burst** - Temporal clustering score (0-100)\n  - **Duration (min)** - How long the pattern lasted\n\n  </td>\n  <td style=\"width: 33%; padding: 0 15px;\">\n\n  ## 🏮 Risk Score Algorithm (5 Components)\n\n  ### 1. Volume (max 60 pts) 📈\n  Logarithmic scaling of XRP volume\n\n  **Scaling:** 1K XRP ≈ 5pts, 10K ≈ 12pts, 100K ≈ 25pts, 1M ≈ 38pts\n\n  **Why:** Large volumes indicate manipulation, but logarithmic curve prevents mega-volume from dominating other signals\n\n  ### 2. Token Focus (max 30 pts) 🪙\n  How many unique accounts trade this token\n\n  **Points:** ≤2 accounts=30, ≤5=22, ≤10=15\n\n  **Why:** Manipulators use few accounts, real tokens have many traders\n\n  ### 3. Price Stability (max 20 pts) 💵\n  Variance in trade prices\n\n  **Why:** Bots trade at precise prices; real markets have natural variance\n\n  ### 4. Burst Detection (max 15 pts) ⚡\n  Trades per hour (temporal clustering)\n\n  **Points:** ≥100/hr=15, ≥50/hr=12, ≥20/hr=8\n\n  **Why:** Catches pump-and-dump schemes and bot bursts\n\n  ### 5. Trade Uniformity (max 10 pts) 🤖\n  Consistency of trade sizes\n\n  **Why:** Bots trade uniform amounts; humans vary\n\n  ---\n\n  ## 📈 Score Example\n\n  **LESS Token (Risk: 72)**\n  - Volume: 9,481 XRP → 30 pts\n  - Focus: 2 traders → 30 pts\n  - Price Var: 0% → 20 pts\n  - Burst: 82.8/hr → 8 pts\n  - Uniformity: Low variance → 7 pts\n  - **Total: 72 points (HIGH risk)**\n  \n  **Pattern:** Ping-pong wash trading between 2 accounts creating 135x volume multiplier (70 XRP → 9,481 XRP apparent volume)\n  \n  *Scores recalculated every 5 minutes with latest data*\n\n  </td>\n  <td style=\"width: 33%; padding-left: 15px;\">\n\n  ## 🔍 Investigation Guide\n\n  **Click Issuer → XRPScan**\n  View token issuer's transaction history, all tokens, counterparties\n\n  **Check Token Details:**\n  - New token? Low liquidity?\n  - Suspicious name or copycat?\n  - How many holders?\n\n  **Analyze Patterns:**\n  - **High Burst (≥75):** Pump & dump attempt\n  - **Low Price Var (<1%):** Bot-executed trades\n  - **Few Takers (≤5):** Coordinated manipulation\n  - **High Trades/Hour (≥50):** Automated campaign\n\n  ---\n\n  ## 🎯 Risk Tiers\n\n  - **CRITICAL (80-100)** - Very high likelihood\n  - **HIGH (70-79)** - Strong manipulation signals\n  - **MEDIUM (50-69)** - Moderate suspicious patterns\n  - **LOW (<50)** - Normal trading behavior\n\n  **Current Average:** 32.6 (healthy market)\n\n  ---\n\n  ## 🚨 Red Flags\n\n  - ✗ Only 1-2 unique traders\n  - ✗ Burst score ≥75\n  - ✗ Price variance <1%\n  - ✗ Trades/hour ≥100\n\n  ---\n\n  ## 📊 Volume Scale\n\n  - <100 XRP: Noise/testing\n  - 100-1K: Small-scale\n  - 1K-10K: Moderate impact\n  - 10K-100K: High impact\n  - >100K: Major event\n\n  ---\n\n  ## ✅ Whitelist Status\n\n  Known legitimate tokens are whitelisted and excluded from risk scoring.\n  - Established DEX tokens\n  - Known stablecoins\n  - Verified projects\n  - Long-standing issuers\n\n  </td>\n  </tr>\n  </table>\n",
-            "mode": "markdown"
-          },
-          "pluginVersion": "11.2.0",
-          "transparent": true,
-          "type": "text"
-        }
-      ],
-      "title": "📖 Methodology Guide (Click to Learn About Wash Trading)",
-      "type": "row"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 16
-      },
-      "id": 13,
-      "panels": [],
-      "title": "🎯 Price Manipulation Leader Board",
-      "type": "row"
     },
     {
       "datasource": {
@@ -1233,7 +1233,7 @@
         }
       ],
       "timeFrom": "$window",
-      "title": "🎯 Actionable Threats (≥10 XRP)",
+      "title": "🎯 Price Manipulation Leader Board",
       "transformations": [
         {
           "id": "sortBy",
@@ -1619,6 +1619,6 @@
   "timezone": "browser",
   "title": "XRP Watchdog",
   "uid": "xrp-watchdog",
-  "version": 63,
+  "version": 64,
   "weekStart": ""
 }
