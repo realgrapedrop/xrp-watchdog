@@ -187,9 +187,10 @@ python analyzers/token_analyzer.py
 
 The system uses a 5-component algorithm (0-100 scale) to detect manipulation:
 
-#### 1. Volume Component (max 50 points)
-- **Formula**: `min(50, log10(volume_millions + 1) × 12.5)`
+#### 1. Volume Component (max 60 points)
+- **Formula**: `min(60, log10(volume_xrp / 1_000_000 + 1) × 15)`
 - **Purpose**: Logarithmic scaling prevents extreme outliers from dominating scores
+- **Scaling Examples**: 1K XRP ≈ 5pts, 10K ≈ 12pts, 100K ≈ 25pts, 1M ≈ 38pts
 - **Why**: Large volumes can indicate manipulation, but linear scaling would be unfair
 
 #### 2. Token Focus (max 30 points)
@@ -220,20 +221,36 @@ The system uses a 5-component algorithm (0-100 scale) to detect manipulation:
 - **Why**: Bots trade uniform amounts; humans vary
 - **Threshold**: <2% variance = robotic pattern
 
+### Dual-Window Analysis
+
+The v2.0 algorithm uses two time windows for comprehensive analysis:
+
+- **24-hour window**: Pattern detection metrics (burst score, price variance, trade uniformity)
+  - Captures short-term manipulation tactics
+  - Identifies rapid pump-and-dump schemes
+  - Detects bot-like precision in recent activity
+
+- **7-day window**: Impact assessment (total volume, unique traders)
+  - Measures sustained market impact
+  - Captures longer manipulation campaigns
+  - Provides context for overall token activity
+
+This dual approach ensures both recent suspicious patterns AND their cumulative impact are considered in risk scoring.
+
 ### Data Flow
 
 1. **Collection Phase** (every 5 minutes):
    - Fetch latest 130 ledgers from XRP Ledger node
    - Extract OfferCreate transactions with executed trades
    - Store raw trade data in `executed_trades` table
-   - ~48,000+ trades collected to date
+   - 280,000+ trades collected to date
 
 2. **Analysis Phase** (after collection):
    - Aggregate trades by token (currency code + issuer)
    - Calculate statistical metrics (price variance, trade density, etc.)
    - Compute risk scores using 5-component algorithm
    - Update `token_stats` table
-   - Runtime: ~40ms for 360+ tokens
+   - Runtime: ~40ms for 500+ tokens
 
 3. **Visualization Phase** (continuous):
    - Grafana queries ClickHouse every 5 minutes
@@ -243,18 +260,27 @@ The system uses a 5-component algorithm (0-100 scale) to detect manipulation:
 ## Dashboard
 
 ### Overview Panel
-Three key metrics:
-- **Total Tokens**: Non-whitelisted tokens with ≥3 trades
-- **Avg Risk Score**: Market health indicator (current: ~32.6)
-- **High Risk Count**: Tokens with risk ≥60
+Seven key metrics displayed:
+- **Tracked**: Total tokens being monitored (currently 928)
+- **Active (1hr)**: Tokens with trades in last hour
+- **Suspicious Rate**: Percentage of flagged accounts (currently 17.8%)
+- **Total Trades**: Complete trade count (currently 282,735)
+- **Total Tokens**: Non-whitelisted tokens analyzed (currently 502)
+- **Avg Risk Score**: Market health indicator (currently 30.2)
+- **High Risk (≥60)**: Tokens with elevated risk scores (currently 16)
 
 ### Top Suspicious Tokens
 Table showing 20 highest-risk tokens with:
-- Token code (hex decoded to ASCII)
-- Issuer address (truncated, clickable to XRPScan)
-- Risk score, trades, volume, price variance
-- Burst score and trades/hour
-- Last updated timestamp
+- **Token**: Currency code (hex decoded to ASCII when possible)
+- **Issuer**: Account address (clickable link to XRPScan)
+- **Risk Score**: 0-100 manipulation likelihood
+- **Trades**: Total executed trades count
+- **XRP Volume (24h)**: Short-term trading activity
+- **XRP Volume (7d)**: Longer-term impact assessment
+- **Price Var %**: Price consistency (low = bot precision)
+- **Trades/Hour**: Activity density (high = burst)
+- **Burst**: Temporal clustering score (0-100)
+- **Duration (min)**: How long the pattern lasted
 
 ### Top Suspicious Accounts
 Accounts actively trading high-risk tokens:
@@ -264,12 +290,27 @@ Accounts actively trading high-risk tokens:
 - First seen / last seen timestamps
 
 ### Methodology Guide
-Collapsible educational panel with:
-- Manipulation tactics explained
-- Risk score algorithm breakdown
-- Investigation workflow
-- Risk tiers and red flags
-- Real examples from collected data
+Collapsible educational panel (collapsed by default) with three-column balanced layout:
+
+**Column 1: Detection Fundamentals**
+- What we're detecting and why
+- Manipulation tactics (wash trading, layering, pump & dump, bot campaigns)
+- Real-world impact on traders and markets
+- Detection capabilities and coverage
+- Table columns explained
+
+**Column 2: Risk Scoring Deep Dive**
+- 5-component algorithm breakdown
+- Volume, token focus, price stability, burst detection, trade uniformity
+- Detailed scoring thresholds and formulas
+- Real example: LESS token (Risk: 72) with pattern analysis
+
+**Column 3: Practical Investigation**
+- Investigation workflow and XRPScan integration
+- Risk tiers (CRITICAL, HIGH, MEDIUM, LOW)
+- Red flags to watch for
+- Volume scale for context
+- Whitelist status explanation
 
 ## File Structure
 
@@ -301,9 +342,12 @@ xrp-watchdog/
 
 - **Collection Frequency**: Every 5 minutes
 - **Ledger Coverage**: 100% (130 ledgers per run)
-- **Analysis Speed**: ~40ms for 360+ tokens
-- **Total Trades Collected**: 48,000+
-- **Tokens Analyzed**: 360+
+- **Analysis Speed**: ~40ms for 500+ tokens
+- **Total Trades Collected**: 282,735+ (as of November 2025)
+- **Tokens Analyzed**: 502 active tokens
+- **Tokens Tracked**: 928 total tokens in system
+- **Average Risk Score**: 30.2 (healthy market)
+- **High Risk Tokens**: 16 tokens with risk ≥60
 - **Database Size**: Optimized with ReplacingMergeTree
 - **Query Performance**: <100ms for dashboard queries
 
