@@ -26,7 +26,7 @@ The public dashboard uses a three-tier architecture:
                          │ HTTPS
                          ↓
 ┌─────────────────────────────────────────────────────────┐
-│              Cloudflare Worker (Edge)                    │
+│              Cloudflare Worker (Edge)                   │
 │  • Serves HTML page with iframe                         │
 │  • Embeds dashboard with kiosk parameters               │
 │  • Clean URL (no visible params)                        │
@@ -35,7 +35,7 @@ The public dashboard uses a three-tier architecture:
                          │ HTTP (internal)
                          ↓
 ┌─────────────────────────────────────────────────────────┐
-│              Cloudflare Tunnel                           │
+│              Cloudflare Tunnel                          │
 │  • Secure tunnel to local server                        │
 │  • Routes traffic to Grafana                            │
 └────────────────────────┬────────────────────────────────┘
@@ -43,7 +43,7 @@ The public dashboard uses a three-tier architecture:
                          │ localhost:3002
                          ↓
 ┌─────────────────────────────────────────────────────────┐
-│              Grafana Container                           │
+│              Grafana Container                          │
 │  • Dashboard backend                                    │
 │  • Anonymous authentication                             │
 │  • ClickHouse datasource                                │
