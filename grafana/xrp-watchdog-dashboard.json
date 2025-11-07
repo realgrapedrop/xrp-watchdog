@@ -36,7 +36,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "gridPos": {
             "h": 30,
@@ -104,7 +104,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83d\udcca Total unique tokens being monitored.<br><br>Counts all tokens that have executed trades in the database.<br><br>Includes both suspicious and\n  legitimate tokens.",
       "fieldConfig": {
@@ -155,7 +155,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -181,7 +181,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\u26a1 Tokens with trading activity in the last hour.<br><br>Shows how many tokens are currently being traded.<br><br>Real-time market activity indicator.",
       "fieldConfig": {
@@ -232,7 +232,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -258,7 +258,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": " \ud83d\udea8 Percentage of ledgers flagged as suspicious.<br><br>\ud83d\udfe2 <15% = Normal<br>\ud83d\udfe1 15-20% = Elevated<br>\ud83d\udfe0 20-25% = High<br>\ud83d\udd34 >25% = Very High<br><br>Based\n  on book_changes screening algorithm.",
       "fieldConfig": {
@@ -325,7 +325,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -351,7 +351,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83d\udcc8 Total number of executed trades in database.<br><br>All DEX transactions captured since monitoring began (Oct 19, 2025).<br><br>Updated every 5 minutes with new data collection.",
       "fieldConfig": {
@@ -403,7 +403,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -429,7 +429,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83c\udfaf Key risk metrics across all monitored tokens.<br><br>\ud83d\udcca Total Tokens: Count of non-whitelisted tokens<br>\ud83d\udcc9 Avg Risk Score: Mean manipulation risk\n  (0-100)<br>\ud83d\udd34 High Risk: Tokens scoring \u226560 (strong signals)<br><br>Lower average = healthier market conditions.",
       "fieldConfig": {
@@ -481,7 +481,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -506,7 +506,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "Suspicious Activity Heatmap:\n  \ud83d\udcca Shows suspicious trades per hour. Higher bars = more manipulation.<br><br>\ud83d\udd34 Red (600-1000) = high activity<br>\ud83d\udfe0 Orange (400-600) = moderate<br>\ud83d\udfe2\n  Green (0-400) = low<br><br>Suspicious = trades >100 XRP or tokens with \u22643 traders.",
       "fieldConfig": {
@@ -576,7 +576,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -603,7 +603,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83d\udcca **Token Diversity Tracker**<br><br>Number of unique tokens being traded over time.<br><br>\ud83d\udd35 Blue line: Unique tokens active<br>\ud83d\udcc8 Rising: More tokens entering market<br>\ud83d\udcc9 Falling: Market consolidation<br><br>Helps identify market expansion vs contraction periods.",
       "fieldConfig": {
@@ -701,7 +701,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -728,7 +728,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83d\udcb0 **XRP Volume Over Time**<br><br>Total XRP traded over time (all tokens combined).<br><br>\ud83d\udfe1 Yellow line: XRP volume<br>\ud83d\udcca Baseline: Normal daily activity ~1,000-10,000 XRP<br>\u26a0\ufe0f Spikes: Large volume events (may indicate manipulation or legitimate market moves)<br><br>The primary metric for detecting high-impact trading patterns.",
       "fieldConfig": {
@@ -830,7 +830,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -857,7 +857,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83d\udcca **Trade Volume Over Time**<br><br>Total number of individual trades executed over time.<br><br>\ud83d\udfe2 Green line: Trade count<br>\ud83d\udcc8 Higher: Increased trading activity<br>\u26a0\ufe0f Spikes: May indicate coordinated manipulation events<br><br>Compare with XRP Volume to identify small vs large trades.",
       "fieldConfig": {
@@ -955,7 +955,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -983,7 +983,7 @@
       "datasource": {
         "default": false,
         "type": "grafana-clickhouse-datasource",
-        "uid": "ef1kycnokfoxsa"
+        "uid": "clickhouse"
       },
       "description": "\ud83d\udcca **Price Manipulation Leader Board**\n\nThis table shows tokens with the highest risk of price manipulation based on behavioral analysis.\n\n---\n\n### \ud83d\udd0d Column Explanations\n\n**\ud83c\udff7\ufe0f Token** - The token being traded (3-letter code or decoded hex)  \n**\ud83d\udc64 Issuer** - Account that created the token (click to view on XRPScan)  \n**\u26a0\ufe0f Risk Score** - Manipulation likelihood (0-100):  \n  \u2022 80-100: CRITICAL - Very high manipulation signals  \n  \u2022 70-79: HIGH - Strong suspicious patterns  \n  \u2022 50-69: MEDIUM - Moderate concerns  \n  \u2022 <50: LOW - Minimal risk detected\n\n**\ud83d\udcc8 Trades** - Total number of executed trades in time window  \n**\ud83d\udcb0 XRP Volume (24h)** - Total XRP traded in last 24 hours  \n**\ud83d\udcb5 XRP Volume (7d)** - Total XRP traded in last 7 days  \n**\ud83d\udcca Price Var %** - Price variance (low = robotic precision)  \n**\u26a1 Trades/Hour** - Trading frequency (high = burst activity)  \n**\ud83d\udca5 Burst** - Temporal clustering score (0-100, higher = faster trading)  \n**\u23f1\ufe0f Duration (min)** - How long the pattern lasted (minutes)\n\n---\n\n### \ud83c\udfaf What to Look For\n\n**\ud83d\udea9 Red Flags:**  \n\u2022 Risk Score \u226570 with high XRP volume (>1000)  \n\u2022 Price Var % near 0 (bot-like precision)  \n\u2022 Burst score \u226580 (rapid-fire trading)  \n\u2022 Few trades with massive volume (pump schemes)\n\n**\u2705 Investigation:**  \nClick the **Issuer** address to view full trading history on XRPScan.\n\n---\n\n### \ud83d\udccc Filtering\n\nOnly tokens with **\u226510 XRP volume (24h)** are shown in this view.  \nLow-impact patterns are hidden to focus on actionable threats.\n",
       "fieldConfig": {
@@ -1212,7 +1212,7 @@
         {
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "editorType": "sql",
           "format": 1,
@@ -1263,7 +1263,7 @@
           "datasource": {
             "default": false,
             "type": "grafana-clickhouse-datasource",
-            "uid": "ef1kycnokfoxsa"
+            "uid": "clickhouse"
           },
           "description": "\ud83c\udfaf **Purpose:** Catch early-stage manipulation, bot testing, and emerging threats\n\n\ud83d\udcca **Shows:** Top 20 highest-risk tokens sorted by Risk Score (no volume minimum)\n\n\ud83d\udd0d **Use Case:** Research low-volume patterns that don't meet the 10 XRP threshold for actionable threats\n\n\u26a1 **Methodology:** Same risk algorithm as main table, but includes micro-volume activity",
           "fieldConfig": {
@@ -1490,7 +1490,7 @@
             {
               "datasource": {
                 "type": "grafana-clickhouse-datasource",
-                "uid": "ef1kycnokfoxsa"
+                "uid": "clickhouse"
               },
               "editorType": "sql",
               "format": 1,
