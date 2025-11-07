@@ -423,6 +423,30 @@ python analyzers/token_analyzer.py
 3. **Risk Algorithm Updates**: Update `token_analyzer.py` and README.md
 4. **Dashboard Changes**: Document queries in `grafana/token_stats_queries.md`
 
+### Dashboard Development & Provisioning
+
+XRP Watchdog uses a dev → prod workflow for safe dashboard updates.
+
+**Quick workflow:**
+1. Edit dashboard in dev Grafana (`http://localhost:3000`)
+2. Run provisioning script: `./scripts/grafana/provision-dev-to-prod.sh`
+3. Changes go live at `https://xrp-watchdog.grapedrop.xyz`
+
+**Features:**
+- ✅ Automatic production backups before changes
+- ✅ Datasource UID validation
+- ✅ Git versioning with auto-commit
+- ✅ Interactive prompts for safety
+- ✅ Rollback instructions provided
+
+**Full documentation:** See [DEV-TO-PROD-SYNC.md](DEV-TO-PROD-SYNC.md) for:
+- Architecture overview (dev vs prod environments)
+- Creating Grafana service accounts with correct permissions
+- Synchronization requirements (datasource UIDs, dashboard UIDs)
+- Step-by-step provisioning workflow
+- Troubleshooting common issues
+- Rollback procedures
+
 ### Code Style
 
 - Python: PEP 8 compliant
