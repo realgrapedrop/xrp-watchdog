@@ -1265,7 +1265,7 @@
             "type": "grafana-clickhouse-datasource",
             "uid": "ef1kycnokfoxsa"
           },
-          "description": "All high-risk behavioral patterns regardless of volume. Useful for research and early detection.",
+          "description": "\ud83c\udfaf **Purpose:** Catch early-stage manipulation, bot testing, and emerging threats\n\n\ud83d\udcca **Shows:** Top 20 highest-risk tokens sorted by Risk Score (no volume minimum)\n\n\ud83d\udd0d **Use Case:** Research low-volume patterns that don't meet the 10 XRP threshold for actionable threats\n\n\u26a1 **Methodology:** Same risk algorithm as main table, but includes micro-volume activity",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1511,7 +1511,7 @@
             }
           ],
           "timeFrom": "$window",
-          "title": "\ud83d\udd0d Research / Low Impact Patterns",
+          "title": "\ud83d\udd0d Deep Dive: Top 20 High-Risk Patterns (No Volume Filter)",
           "transformations": [
             {
               "id": "sortBy",
