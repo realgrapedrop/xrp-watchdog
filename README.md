@@ -47,6 +47,8 @@ The dashboard provides real-time insights into token manipulation on the XRP Led
 
 **Note:** The `install.sh` script will check for these prerequisites and guide you through setup.
 
+For a comprehensive list of all system dependencies, Python packages, Docker containers, and version requirements, see **[docs/DEPENDENCIES.md](docs/DEPENDENCIES.md)**.
+
 ### Installation
 
 **Option A: Automated Installation (Recommended)**
@@ -105,7 +107,7 @@ docker exec -i xrp-watchdog-clickhouse clickhouse-client --multiquery < sql/sche
    ```bash
    crontab -e
    # Add:
-   */5 * * * * /home/grapedrop/monitoring/xrp-watchdog/run_collection.sh >> /home/grapedrop/monitoring/xrp-watchdog/logs/cron.log 2>&1
+   */5 * * * * /home/grapedrop/projects/xrp-watchdog/run_collection.sh >> /home/grapedrop/projects/xrp-watchdog/logs/auto_collection.log 2>&1
    ```
 
 3. **Configure Grafana**:
@@ -330,6 +332,14 @@ xrp-watchdog/
 ├── logs/
 │   ├── auto_collection.log        # Automated collection log
 │   └── cron.log                   # Cron execution log
+├── scripts/
+│   ├── prod_start.sh              # Start production stack
+│   ├── prod_stop.sh               # Stop production stack
+│   ├── prod_restart.sh            # Restart production stack
+│   ├── getMakerTaker.sh           # Trade extraction helper
+│   ├── manage_whitelist.py        # Whitelist management tool
+│   └── grafana/
+│       └── provision-dev-to-prod.sh # Dashboard sync script
 ├── sql/
 │   ├── schema.sql                 # Database schema
 │   └── migrations/
@@ -485,6 +495,103 @@ clickhouse-client --query "SELECT MAX(last_updated) FROM xrp_watchdog.token_stat
 # Check disk usage
 clickhouse-client --query "SELECT formatReadableSize(sum(bytes)) as size FROM system.parts WHERE database = 'xrp_watchdog'"
 ```
+
+## Production Management
+
+XRP Watchdog includes production stack management scripts for controlling all services.
+
+### Management Scripts
+
+Located in `scripts/`:
+- **`prod_start.sh`** - Start entire production stack with health checks
+- **`prod_stop.sh`** - Gracefully stop all production services
+- **`prod_restart.sh`** - Restart entire production stack
+
+### Production Stack Components
+
+The production stack includes:
+1. **ClickHouse Database** - Data storage layer (`xrp-watchdog-clickhouse` container)
+2. **Grafana Dashboard** - Visualization layer (`grafana-prod-watchdog` container)
+3. **Cloudflare Tunnel** - Public access layer (`cloudflared-xrp-watchdog` systemd service)
+4. **Cron Job** - Automated data collection (runs every 5 minutes)
+
+### Usage
+
+**Start production stack:**
+```bash
+./scripts/prod_start.sh
+```
+
+Features:
+- Starts services in correct order (ClickHouse → Grafana → Tunnel)
+- Waits for each service to become healthy before proceeding
+- Runs comprehensive health checks
+- Verifies tunnel connections (expects 4 active connections)
+- Checks trade count in database
+- Tests public URL accessibility
+- Shows detailed status summary
+
+**Stop production stack:**
+```bash
+./scripts/prod_stop.sh
+```
+
+Features:
+- Stops services gracefully in reverse order
+- Preserves all data (ClickHouse volumes remain intact)
+- Cloudflare Tunnel stops accepting traffic
+- Cron job continues running but will fail until restart
+
+**Restart production stack:**
+```bash
+./scripts/prod_restart.sh
+```
+
+Features:
+- Calls `prod_stop.sh` followed by `prod_start.sh`
+- Useful after configuration changes
+- Full health verification on restart
+- 3-second delay between stop and start
+
+### Health Check Output
+
+The start script provides detailed status:
+```
+Service Status:
+  ✓ ClickHouse: 524,249 trades in database
+  ✓ Grafana: ClickHouse datasource configured
+  ✓ Public URL: Accessible
+  ✓ Tunnel: 4 active connections
+  ✓ Cron: RUNNING (every 5 minutes)
+
+Endpoints:
+  • Public: https://xrp-watchdog.grapedrop.xyz
+  • Local:  http://localhost:3002
+```
+
+### Troubleshooting
+
+**Problem**: Scripts fail with permission errors
+- **Solution**: Ensure scripts are executable: `chmod +x scripts/prod_*.sh`
+
+**Problem**: Tunnel shows 0 connections after start
+- **Check**: `systemctl status cloudflared-xrp-watchdog`
+- **Solution**: Verify tunnel config at `~/.cloudflared/config-xrp-watchdog.yml`
+
+**Problem**: Grafana health check fails
+- **Check**: `docker logs grafana-prod-watchdog`
+- **Solution**: Verify port 3002 is not in use by another process
+
+**Problem**: ClickHouse won't start
+- **Check**: `docker logs xrp-watchdog-clickhouse`
+- **Solution**: Verify Docker has sufficient resources and data volumes exist
+
+### Service URLs
+
+- **Production Dashboard**: https://xrp-watchdog.grapedrop.xyz
+- **Local Grafana**: http://localhost:3002
+- **ClickHouse HTTP**: http://localhost:8123
+- **ClickHouse Native**: localhost:9000
 
 ## Known Limitations
 
