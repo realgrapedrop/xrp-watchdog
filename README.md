@@ -449,7 +449,7 @@ XRP Watchdog uses a dev → prod workflow for safe dashboard updates.
 - ✅ Interactive prompts for safety
 - ✅ Rollback instructions provided
 
-**Full documentation:** See [DEV-TO-PROD-SYNC.md](DEV-TO-PROD-SYNC.md) for:
+**Full documentation:** See [docs/DEV-TO-PROD-SYNC.md](docs/DEV-TO-PROD-SYNC.md) for:
 - Architecture overview (dev vs prod environments)
 - Creating Grafana service accounts with correct permissions
 - Synchronization requirements (datasource UIDs, dashboard UIDs)
